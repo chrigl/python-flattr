@@ -34,10 +34,16 @@ def isBool(x):
     >>> isBool(False)
     True
     >>> isBool(1)
-    False
+    True
     >>> isBool(0)
+    True
+    >>> isBool(2)
+    False
+    >>> isBool('true')
     False
     """
+    if isinstance(x, int) and x in [0,1]:
+        return True
     return isinstance(x, bool)
 
 def isStr(x):
@@ -73,6 +79,12 @@ def isUrl(x):
     if not isStr(x):
         return False
     return url_pat.match(x) != None
+
+def isStrList(x):
+    """ Returns True, if x is a list/tuple of strings """
+    if not isinstance(x, (list, tuple)):
+        return False
+    return all([isStr(s) for s in x])
 
 def validate(validator):
     """ Decorator to use a specified validator for your function/method. """

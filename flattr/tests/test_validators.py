@@ -1,9 +1,8 @@
 from flattr.validators import isInt
-from flattr.validators import isBool
 from flattr.validators import isStr
 from flattr.validators import isBinary
-from flattr.validators import isFloat
 from flattr.validators import isUrl
+from flattr.validators import isStrList
 from flattr.validators import validate
 import sys
 from pytest import raises
@@ -38,6 +37,23 @@ def test_isUrl():
         assert isUrl('hello') == False
         assert isUrl('http://a') == True
         assert isUrl('https://b') == True
+
+def test_isStrList():
+    if sys.version < '3':
+        res_tags_l = [u'tag1', u'tag2']
+        res_tags_t = (u'tag1', u'tag2')
+    else:
+        res_tags_l = ['tag1', 'tag2']
+        res_tags_t = ('tag1', 'tag2')
+
+    assert isStrList(res_tags_l) == True
+    assert isStrList(res_tags_t) == True
+    assert isStrList('Hello') == False
+
+    if sys.version < '3':
+        assert isStrList(['tag1']) == False
+    else:
+        assert isStrList([b'tag1']) == False
 
 def test_validate():
     @validate(isInt)
