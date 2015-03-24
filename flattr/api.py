@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import requests
+from flattr import result
 
 def get(auth_token):
     session = requests.Session()
@@ -13,5 +14,19 @@ class BaseApi:
         session should be of type requests.sessions.Session."""
         self._session = session
 
+class ThingApi(BaseApi):
+
+    def list_own(self):
+        """Returns list of authenticated users things"""
+        res = self._session.get('https://api.flattr.com/rest/v2/user/things')
+
+
+things = ThingApi(None)
+
 class FlattrApi(BaseApi):
-    pass
+
+    def __init__(self, session):
+        """Set the session."""
+        super(FlattrApi, self).__init__(session)
+        self._things = things
+        self._things._session = session

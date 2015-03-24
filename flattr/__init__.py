@@ -1,17 +1,27 @@
 from functools import wraps
 import requests
+from simplejson.decoder import JSONDecodeError
+from flattr.exc import raise_exception
 
-def map_type(cls):
-    def _map_type(fn):
+def result(cls):
+    def _result(fn):
         @wraps(fn)
-        def __map_type(*args, **kwargs):
+        def __result(*args, **kwargs):
             resp = fn(*args, **kwargs)
             if resp.status_code != 200:
-                return None
+                try:
+                    res = resp.json()
+                    error = res['error']
+                    description = res['error_description']
+                except JSONDecodeError:
+                    # just a hack, since 404 could come without json-body
+                    error = 'not_found'
+                    description = resp.text
+                raise_exception(resp.status_code, error, description)
             res = resp.json()
             if isinstance(res, list):
                 return (cls(**elm) for elm in res)
             else:
                 return cls(**res)
-        return __map_type
-    return _map_type
+        return __result
+    return _result

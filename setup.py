@@ -33,6 +33,9 @@ setup(name='flattr',
       cmdclass = {'test': PyTest},
       install_requires=[
           # -*- Extra requirements: -*-
+          'six',
+          'requests',
+          'simplejson',
       ],
       entry_points="""
       # -*- Entry points: -*-
