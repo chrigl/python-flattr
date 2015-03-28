@@ -1,10 +1,10 @@
 import sys
-from flattr.flattrs import Flattrs
+from flattr.flattrs import Flattr
 from pytest import raises
 
 
 def test_init():
-    x = Flattrs(
+    x = Flattr(
 
         thing='fff_thing',
         owner='fff_owner',
@@ -15,7 +15,7 @@ def test_init():
     assert x.created_at == 'fff_created_at'
 
 def test_thing():
-    x = Flattrs()
+    x = Flattr()
 
     assert x.thing == None
 
@@ -27,7 +27,7 @@ def test_thing():
 
 
 def test_owner():
-    x = Flattrs()
+    x = Flattr()
 
     assert x.owner == None
 
@@ -39,7 +39,7 @@ def test_owner():
 
 
 def test_created_at():
-    x = Flattrs()
+    x = Flattr()
 
     assert x.created_at == None
 

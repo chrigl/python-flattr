@@ -1,9 +1,16 @@
+import flattr
+import flattr.things
+import flattr.resource
+import flattr.flattrs
 
-class User(object):
+class User(flattr.resource.Resource):
     """ Flattr users.
     http://developers.flattr.net/api/resources/users/`_ """
 
+    _endpoint = 'rest/v2/users'
+
     def __init__(self, **kw):
+        super(User, self).__init__(kw.get('session', None))
         if 'resource' in kw:
             self._resource=kw['resource']
         if 'link' in kw:
@@ -112,3 +119,13 @@ class User(object):
         if not hasattr(self, '_registered_at'):
             return None
         return self._registered_at
+
+    @flattr.result(flattr.things.Thing)
+    @flattr.get('/:username/things')
+    def get_things(self, count=None, page=None, full=False):
+        return flattr._get_query_dict(count=count, page=page, full=full)
+
+    @flattr.result(flattr.flattrs.Flattr)
+    @flattr.get('/:username/flattrs')
+    def get_flattrs(self, count=None, page=None, full=False):
+        return flattr._get_query_dict(count=count, page=page, full=full)

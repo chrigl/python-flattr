@@ -299,6 +299,9 @@ def test_hidden():
     with raises(TypeError):
         t.hidden = 2
 
+    delattr(t, '_hidden')
+    assert t.hidden == None
+
 # test constructor
 def test_init():
     if sys.version < '3':
@@ -395,3 +398,17 @@ def test_init_validation():
 
     t = Thing(dirty=False)
     assert t._dirty == False
+
+def test_support():
+    t = Thing()
+    t.support()
+
+def test_commit():
+    # this might be removed
+    t = Thing()
+    t.commit()
+
+def test_refresh():
+    # this might be removed
+    t = Thing()
+    t.refresh()

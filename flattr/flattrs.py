@@ -1,5 +1,5 @@
 
-class Flattrs:
+class Flattr:
     def __init__(self, **kw):
 
         if 'thing' in kw:

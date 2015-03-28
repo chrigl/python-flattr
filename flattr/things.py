@@ -1,15 +1,21 @@
+import flattr
+import flattr.flattrs
+import flattr.resource
 from flattr.validators import validate
 from flattr.validators import isStr
 from flattr.validators import isStrList
 from flattr.validators import isUrl
 from flattr.validators import isBool
 
-class Thing(object):
+class Thing(flattr.resource.Resource):
     """ flattr able `thing.
     http://developers.flattr.net/api/resources/things/`_ """
 
+    _endpoint = 'rest/v2/things'
+
     def __init__(self, **kw):
         """ Initialize with data of an dictionary """
+        super(Thing, self).__init__(kw.get('session', None))
         
         # ro fields
         # Do not check any types.
@@ -240,7 +246,7 @@ class Thing(object):
         self._dirty = True
 
     # we also need some functionality
-    def flattr(self):
+    def support(self):
         """ Flattr this particular thing.
         Will not work if it's your thing. """
         raise NotImplementedError
@@ -253,3 +259,8 @@ class Thing(object):
         """ Refresh this particular thing. Only works if it exists already on
         flattr (id, resource, etc. obtained from flattr) """
         raise NotImplementedError
+
+    @flattr.result(flattr.flattrs.Flattr)
+    @flattr.get('/:id/flattrs')
+    def get_flattrs(self, count=None, page=None, full=False):
+        return flattr._get_query_dict(count=count, page=page, full=full)

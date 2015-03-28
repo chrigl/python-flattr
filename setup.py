@@ -7,7 +7,8 @@ version = '0.1'
 class PyTest(TestCommand):
     def finalize_options(self):
         TestCommand.finalize_options(self)
-        self.test_args = ['--doctest-modules', 'flattr']
+        self.test_args = ['--cov-report', 'term-missing', '--cov', 'flattr',
+            '--doctest-modules', 'flattr']
         self.test_suite = True
     def run_tests(self):
         #import here, cause outside the eggs aren't loaded
@@ -29,7 +30,7 @@ setup(name='flattr',
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
       include_package_data=True,
       zip_safe=False,
-      tests_require=['pytest'],
+      tests_require=['pytest', 'pytest-cov'],
       cmdclass = {'test': PyTest},
       install_requires=[
           # -*- Extra requirements: -*-

@@ -1,7 +1,7 @@
 import six
 import types
 from pytest import raises
-from flattr import result
+import flattr
 from flattr.exc import NotFoundError, InvalidScopeError
 from simplejson.decoder import JSONDecodeError
 
@@ -31,6 +31,10 @@ class FakeResponseList(FakeResponse):
                 'error_description': 'something, somewhere, somehow went wrong'}
         return [{'some': 'correct json'}]
 
+class DummyRequestClass:
+    def __init__(self):
+        self._session = 'FAKE_SESSION'
+
 
 class DummyReturn:
     def __init__(self, *args, **kwargs):
@@ -39,19 +43,19 @@ class DummyReturn:
 
 def test_result_fails():
     with raises(NotFoundError):
-        res = result(DummyReturn)(lambda: FakeResponse(404, 'not_found'))()
+        res = flattr.result(DummyReturn)(lambda self: FakeResponse(404, 'not_found'))(DummyRequestClass())
 
     with raises(InvalidScopeError):
-        result(DummyReturn)(lambda: FakeResponse(403, 'invalid_scope'))()
+        flattr.result(DummyReturn)(lambda self: FakeResponse(403, 'invalid_scope'))(DummyRequestClass())
 
 def test_result():
-    res = result(DummyReturn)(lambda: FakeResponse(200, 'nothing'))()
+    res = flattr.result(DummyReturn)(lambda self: FakeResponse(200, 'nothing'))(DummyRequestClass())
 
     assert isinstance(res, DummyReturn)
     assert res.some == 'correct json'
 
 def test_result_list():
-    gen = result(DummyReturn)(lambda: FakeResponseList(200, 'nothing'))()
+    gen = flattr.result(DummyReturn)(lambda self: FakeResponseList(200, 'nothing'))(DummyRequestClass())
 
     assert isinstance(gen, types.GeneratorType)
 
@@ -61,3 +65,29 @@ def test_result_list():
 
     with raises(StopIteration):
         next(gen)
+
+def test_get():
+    def _fake_func(self, a='b'):
+        return {'a': a}
+    class DummySession:
+        def get(self, url, params=None):
+            return url, params
+
+    class DummyRequest:
+        _session = DummySession()
+        _my = 'hello'
+        def _get_url(self):
+            return 'http://localhost'
+
+    dummy = DummyRequest()
+    ret = flattr.get('/my/test/foo')(_fake_func)(dummy)
+    assert ret == ('http://localhost/my/test/foo', {'a': 'b'})
+
+    ret = flattr.get('/:my/test/foo')(_fake_func)(dummy, a='c')
+    assert ret == ('http://localhost/hello/test/foo', {'a': 'c'})
+
+    ret = flattr.get('/my/')(lambda x: 'test,foo')(dummy)
+    assert ret == ('http://localhost/my/test,foo', {})
+
+    ret = flattr.get('/my')(lambda x: 'test,foo')(dummy)
+    assert ret == ('http://localhost/my/test,foo', {})

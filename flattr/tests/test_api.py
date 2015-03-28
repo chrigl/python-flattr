@@ -1,4 +1,5 @@
 from flattr import api
+import flattr.base
 from pytest import raises
 import requests
 
@@ -15,9 +16,23 @@ def test_BaseApi():
     #    flattr_api = api.BaseApi('')
 
     session = requests.Session()
-    flattr_api = api.BaseApi(session)
+    flattr_api = flattr.base.BaseApi(session)
 
     assert flattr_api._session == session
+
+    old_api_url = flattr_api._api_url
+    flattr_api._api_url = None
+    with raises(AssertionError):
+        flattr_api._get_url()
+
+    flattr_api._api_url = old_api_url
+    with raises(AssertionError):
+        flattr_api._get_url()
+
+    flattr_api._endpoint = 'endpoint'
+    res = flattr_api._get_url()
+    assert res == 'https://api.flattr.com/endpoint'
+
 
 def test_FlattrApi():
     #with raises(TypeError):
