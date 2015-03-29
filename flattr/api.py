@@ -16,6 +16,11 @@ class ThingApi(flattr.base.BaseApi):
 
     _endpoint = 'rest/v2/things'
 
+    def new(self, **kwargs):
+        """Returns new `flattr.things.Thing`, connected to the session.
+        For parameters have a look at `flattr.things.Thing`."""
+        return flattr.things.Thing(session=self._session, **kwargs)
+
     @flattr.result(flattr.things.Thing)
     @flattr.get('/')
     def get(self, *args):

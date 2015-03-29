@@ -1,5 +1,6 @@
 from flattr import api
 import flattr.base
+import flattr.things
 from pytest import raises
 import requests
 
@@ -34,14 +35,21 @@ def test_BaseApi():
     assert res == 'https://api.flattr.com/endpoint'
 
 
-def test_FlattrApi():
-    #with raises(TypeError):
-    #    flattr_api = api.FlattrApi('')
-
+def test_FlattrApi_new():
     session = requests.Session()
-    flattr_api = api.FlattrApi(session)
+    flattr_api = api.ThingApi(session)
 
     assert flattr_api._session == session
+
+    res = flattr_api.new(id=1, title='Hello World')
+    assert isinstance(res, flattr.things.Thing)
+    assert res._session == session
+    assert res.id == 1
+    assert res.title == 'Hello World'
+
+def test_FlattrApi():
+    session = requests.Session()
+    flattr_api = api.FlattrApi(session)
 
     assert hasattr(flattr_api, 'things')
     assert hasattr(flattr_api, 'users')
