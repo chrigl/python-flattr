@@ -12,7 +12,9 @@ class User(flattr.resource.Resource):
     def __init__(self, session=None, resource=None, link=None,
                  username=None, url=None, firstname=None, lastname=None,
                  avatar=None, about=None, city=None, country=None, email=None,
-                 registered_at=None):
+                 registered_at=None, **kwargs):
+        # ignored fields: kwargs
+        # so lib will not break if flattr-api adds a new field
         super(User, self).__init__(session)
         self._resource=resource
         self._link=link
@@ -26,6 +28,9 @@ class User(flattr.resource.Resource):
         self._country=country
         self._email=email
         self._registered_at=registered_at
+
+    def __repr_helper__(self):
+        return '%s' % self._username
 
     @property
     def resource(self):

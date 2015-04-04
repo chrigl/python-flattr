@@ -35,7 +35,7 @@ def test_BaseApi():
     assert res == 'https://api.flattr.com/endpoint'
 
     with raises(NotImplementedError):
-        flattr.base.BaseApi.new()
+        flattr_api.new()
 
 def test_FlattrApi_new():
     session = requests.Session()

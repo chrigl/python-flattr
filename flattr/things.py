@@ -18,8 +18,10 @@ class Thing(flattr.resource.Resource):
                  owner=None, image=None, flattred=None, last_flattr_at=None,
                  updated_at=None, title=None, description=None, url=None,
                  tags=None, category=None, language=None, hidden=False,
-                 dirty=True):
+                 subscribed=False, dirty=True, **kwargs):
         """ Initialize with data of an dictionary """
+        # ignored fields: kwargs
+        # so lib will not break if flattr-api adds a new field
         super(Thing, self).__init__(session)
         # ro fields
         # Do not check any types.
@@ -34,6 +36,7 @@ class Thing(flattr.resource.Resource):
         self._flattred = flattred
         self._last_flattr_at = last_flattr_at
         self._updated_at = updated_at
+        self._subscribed = subscribed
         # rw fields
         # Checking types. Implicit via validate on fields.
         if title:
@@ -51,6 +54,9 @@ class Thing(flattr.resource.Resource):
         self.hidden = hidden
 
         self._dirty = dirty
+
+    def __repr_helper__(self):
+        return self._title or id(self)
 
     # Most of the fields are readonly since you can not modify them on flattr
     @property
@@ -107,6 +113,11 @@ class Thing(flattr.resource.Resource):
     def updated_at(self):
         """ Returns updated_at """
         return getattr(self, '_updated_at', None)
+
+    @property
+    def subscribed(self):
+        """ Returns subscribed """
+        return getattr(self, '_subscribed', False)
 
     # Some fields are writeable. Only those are submitted to the flattr api.
     @property
@@ -203,10 +214,41 @@ class Thing(flattr.resource.Resource):
         """ Create thing, or update if existing. """
         raise NotImplementedError
 
+    @flattr.refresh_thing_id
+    @flattr.post('/')
+    def _create(self):
+        """ Create thing """
+        return self._to_flattr_dict()
+
+    @flattr.patch('/:id')
+    def _update(self):
+        """ Returns flattr result or None.
+        None if nothing to do since object is not dirty. """
+        if self._dirty:
+            return self._to_flattr_dict()
+        return False
+
     def refresh(self):
         """ Refresh this particular thing. Only works if it exists already on
         flattr (id, resource, etc. obtained from flattr) """
         raise NotImplementedError
+
+    def _to_flattr_dict(self):
+        """ Returns flattr compatible dict for posts """
+        if not self.url:
+            raise AttributeError('url is required')
+        if self.tags:
+            tags = ','.join(self.tags)
+        else:
+            tags = None
+        return flattr._get_query_dict(
+                url=self.url,
+                hidden=self.hidden,
+                title=self.title,
+                description=self.description,
+                category=self.category,
+                tags=tags
+                )
 
     @flattr.result(flattr.flattrs.Flattr)
     @flattr.get('/:id/flattrs')

@@ -1,8 +1,11 @@
 import flattr.resource
 
 class Flattr(flattr.resource.Resource):
-    def __init__(self, session=None, thing=None, owner=None, created_at=None):
+    def __init__(self, session=None, thing=None, owner=None, created_at=None,
+                 **kwargs):
         """A flattr/support object"""
+        # ignored fields: kwargs
+        # so lib will not break if flattr-api adds a new field
         self._thing = thing
         self._owner = owner
         self._created_at = created_at

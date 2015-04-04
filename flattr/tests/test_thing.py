@@ -406,9 +406,36 @@ def test_support():
 def test_commit():
     # this might be removed
     t = Thing()
-    t.commit()
+    #t.commit()
+    raise NotImplementedError
 
 def test_refresh():
     # this might be removed
     t = Thing()
     t.refresh()
+
+def test_to_flattr_dict():
+    t = Thing()
+
+    with raises(AttributeError):
+        t._to_flattr_dict()
+
+    t.url = 'http://flattr.com'
+
+    ret = t._to_flattr_dict()
+    assert ret == {'url': 'http://flattr.com', 'hidden': False}
+
+    t.title = 'Hello World'
+    t.description = 'Some description'
+    t.category = 'cat'
+    t.language = 'de_DE'
+    t.tags = ['test', 'me']
+    t.hidden=True
+
+    ret = t._to_flattr_dict()
+    assert ret == {'url': 'http://flattr.com',
+                   'hidden': True,
+                   'title': 'Hello World',
+                   'description': 'Some description',
+                   'category': 'cat',
+                   'tags': 'test,me'}

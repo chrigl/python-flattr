@@ -66,6 +66,47 @@ def test_result_list():
     with raises(StopIteration):
         next(gen)
 
+def test_result_None():
+    # if the response is None, very likely, the call did not happen, because
+    # not necessary in this case. e.g. it is not necessary to update a thing
+    # if it is not dirty. So we can save api-calls if nothing real is to do.
+    res = flattr.result(DummyReturn)(lambda self: None)(DummyRequestClass())
+
+    assert res == None
+
+def test_api_call():
+    def _fake_func(self, a='b'):
+        return {'a': a}
+    class DummySession:
+        def get(self, url, params=None):
+            return url, params
+
+    class DummyRequest:
+        _session = DummySession()
+        _my = 'hello'
+        def _get_url(self):
+            return 'http://localhost'
+
+    dummy = DummyRequest()
+    ret = flattr._api_call('/my/test/foo')(_fake_func)(dummy)
+    assert ret == ('http://localhost/my/test/foo', {'a': 'b'})
+
+    ret = flattr._api_call('/:my/test/foo')(_fake_func)(dummy, a='c')
+    assert ret == ('http://localhost/hello/test/foo', {'a': 'c'})
+
+    ret = flattr._api_call('/my/')(lambda x: 'test,foo')(dummy)
+    assert ret == ('http://localhost/my/test,foo', {})
+
+    ret = flattr._api_call('/my')(lambda x: 'test,foo')(dummy)
+    assert ret == ('http://localhost/my/test,foo', {})
+
+    ret = flattr._api_call('/my')(lambda x: False)(dummy)
+    assert ret == None
+
+    ret = flattr._api_call('/my/test/foo',
+            additional_params={'_method': 'patch'})(_fake_func)(dummy)
+    assert ret == ('http://localhost/my/test/foo', {'a': 'b', '_method': 'patch'})
+
 def test_get():
     def _fake_func(self, a='b'):
         return {'a': a}
@@ -90,4 +131,30 @@ def test_get():
     assert ret == ('http://localhost/my/test,foo', {})
 
     ret = flattr.get('/my')(lambda x: 'test,foo')(dummy)
+    assert ret == ('http://localhost/my/test,foo', {})
+
+def test_post():
+    def _fake_func(self, a='b'):
+        return {'a': a}
+    class DummySession:
+        def post(self, url, data=None):
+            return url, data
+
+    class DummyRequest:
+        _session = DummySession()
+        _my = 'hello'
+        def _get_url(self):
+            return 'http://localhost'
+
+    dummy = DummyRequest()
+    ret = flattr.post('/my/test/foo')(_fake_func)(dummy)
+    assert ret == ('http://localhost/my/test/foo', {'a': 'b'})
+
+    ret = flattr.post('/:my/test/foo')(_fake_func)(dummy, a='c')
+    assert ret == ('http://localhost/hello/test/foo', {'a': 'c'})
+
+    ret = flattr.post('/my/')(lambda x: 'test,foo')(dummy)
+    assert ret == ('http://localhost/my/test,foo', {})
+
+    ret = flattr.post('/my')(lambda x: 'test,foo')(dummy)
     assert ret == ('http://localhost/my/test,foo', {})
