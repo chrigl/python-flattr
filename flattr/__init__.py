@@ -32,9 +32,9 @@ def result(cls):
             if res is None:
                 return None
             elif isinstance(res, list):
-                return (cls(session=self._session, **elm) for elm in res)
+                return (cls(session=self._session, dirty=False, **elm) for elm in res)
             else:
-                return cls(session=self._session, **res)
+                return cls(session=self._session, dirty=False, **res)
         return __result
     return _result
 
@@ -121,6 +121,16 @@ def refresh_thing_id(fn):
             self._dirty = False
         return res
     return _refresh_thing_id
+
+def just_json(fn):
+    @functools.wraps(fn)
+    def _just_json(self, *args, **kwargs):
+        resp = fn(self, *args, **kwargs)
+        res = _handle_response(resp)
+        if res is None:
+            return None
+        return res
+    return _just_json
 
 def _get_query_dict(**kwargs):
     """Returns query dict by kwargs.

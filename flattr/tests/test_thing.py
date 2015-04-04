@@ -399,15 +399,66 @@ def test_init_validation():
     t = Thing(dirty=False)
     assert t._dirty == False
 
-def test_support():
-    t = Thing()
-    t.support()
+class FakeResponse:
 
-def test_commit():
-    # this might be removed
-    t = Thing()
-    #t.commit()
-    raise NotImplementedError
+    def __init__(self, url, data, status_code=200):
+        self.data = data
+        self.url = url
+        self.status_code = status_code
+
+
+    def json(self):
+        return {'url': self.url,
+                'data': self.data,
+                'id': self.data.get('id', 1)}
+
+class FakeSession:
+
+    def __init__(self, status_code=200):
+        self.status_code = status_code
+
+    def post(self, url, data):
+        return FakeResponse(url, data, status_code=self.status_code)
+
+def test_support():
+    t = Thing(session=FakeSession(), id=1)
+    ret = t.support()
+    assert isinstance(ret, FakeResponse)
+
+    res = ret.json()
+
+    assert res['url'] == 'https://api.flattr.com/rest/v2/things/1/flattr'
+    assert res['data'] == {}
+
+def test_commit_create():
+    t = Thing(session=FakeSession(status_code=201), url='https://chrigl.de')
+    ret = t.commit()
+
+    assert ret['url'] == 'https://api.flattr.com/rest/v2/things/'
+    assert ret['data'] == {'url': 'https://chrigl.de', 'hidden': False}
+    assert ret['id'] == 1
+    assert t._dirty == False
+
+def test_commit_update():
+    t = Thing(session=FakeSession(), url='https://chrigl.de', id=2)
+    ret = t.commit()
+
+    assert ret['url'] == 'https://api.flattr.com/rest/v2/things/2'
+    assert ret['data'] == {'url': 'https://chrigl.de', 'hidden': False,
+            '_method': 'patch'}
+    # do not care about if field in this test. testing this is only required
+    # for create.
+    assert t._dirty == False
+
+    ret = t.commit()
+    assert ret is None
+
+def test_delete():
+    t = Thing(session=FakeSession(), url='https://chrigl.de', id=2)
+    ret = t.delete()
+
+    assert t._dirty == True
+    assert t._id is None
 
 def test_refresh():
     # this might be removed
@@ -439,3 +490,13 @@ def test_to_flattr_dict():
                    'description': 'Some description',
                    'category': 'cat',
                    'tags': 'test,me'}
+
+def test_repr():
+    t = Thing()
+
+    res = repr(t)
+    assert res == '<flattr.things.Thing at %s>' % id(t)
+
+    t.title = 'Hello World'
+    res = repr(t)
+    assert res == '<flattr.things.Thing Hello World>'

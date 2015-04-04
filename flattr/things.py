@@ -56,7 +56,7 @@ class Thing(flattr.resource.Resource):
         self._dirty = dirty
 
     def __repr_helper__(self):
-        return self._title or id(self)
+        return getattr(self, '_title', None) or 'at %s' % id(self)
 
     # Most of the fields are readonly since you can not modify them on flattr
     @property
@@ -205,14 +205,19 @@ class Thing(flattr.resource.Resource):
         self._dirty = True
 
     # we also need some functionality
+    @flattr.post('/:id/flattr')
     def support(self):
         """ Flattr this particular thing.
         Will not work if it's your thing. """
-        raise NotImplementedError
+        return {}
 
     def commit(self):
         """ Create thing, or update if existing. """
-        raise NotImplementedError
+        if not getattr(self, '_id', None):
+            return self._create()
+        res = self._update()
+        self._dirty = False
+        return res
 
     @flattr.refresh_thing_id
     @flattr.post('/')
@@ -220,6 +225,7 @@ class Thing(flattr.resource.Resource):
         """ Create thing """
         return self._to_flattr_dict()
 
+    @flattr.just_json
     @flattr.patch('/:id')
     def _update(self):
         """ Returns flattr result or None.
