@@ -10,7 +10,7 @@ class User(flattr.resource.Resource):
     _endpoint = 'rest/v2/users'
 
     def __init__(self, **kw):
-        super(User, self).__init__(kw.get('session', None))
+        super(User, self).__init__(session=kw.get('session', None))
         if 'resource' in kw:
             self._resource=kw['resource']
         if 'link' in kw:
