@@ -1,31 +1,23 @@
+import flattr.resource
 
-class Flattr:
-    def __init__(self, **kw):
-
-        if 'thing' in kw:
-            self._thing = kw['thing']
-        if 'owner' in kw:
-            self._owner = kw['owner']
-        if 'created_at' in kw:
-            self._created_at = kw['created_at']
+class Flattr(flattr.resource.Resource):
+    def __init__(self, session=None, thing=None, owner=None, created_at=None):
+        """A flattr/support object"""
+        self._thing = thing
+        self._owner = owner
+        self._created_at = created_at
 
     @property
     def thing(self):
         """ Returns thing """
-        if not hasattr(self, '_thing'):
-            return None
-        return self._thing
+        return getattr(self, '_thing', None)
 
     @property
     def owner(self):
         """ Returns owner """
-        if not hasattr(self, '_owner'):
-            return None
-        return self._owner
+        return getattr(self, '_owner', None)
 
     @property
     def created_at(self):
         """ Returns created_at """
-        if not hasattr(self, '_created_at'):
-            return None
-        return self._created_at
+        return getattr(self, '_created_at', None)

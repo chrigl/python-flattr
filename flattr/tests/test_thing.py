@@ -300,7 +300,7 @@ def test_hidden():
         t.hidden = 2
 
     delattr(t, '_hidden')
-    assert t.hidden == None
+    assert t.hidden == False
 
 # test constructor
 def test_init():

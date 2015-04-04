@@ -12,5 +12,6 @@ class BaseApi:
         assert hasattr(self, '_endpoint')
         return '%s/%s' % (self._api_url, self._endpoint)
 
-    def new(self, **kwargs):
-        raise NotImplemented
+    @staticmethod
+    def new(*args, **kwargs):
+        raise NotImplementedError

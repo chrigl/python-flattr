@@ -34,6 +34,8 @@ def test_BaseApi():
     res = flattr_api._get_url()
     assert res == 'https://api.flattr.com/endpoint'
 
+    with raises(NotImplementedError):
+        flattr.base.BaseApi.new()
 
 def test_FlattrApi_new():
     session = requests.Session()
@@ -64,9 +66,9 @@ def test_FlattrApi():
     assert flattr_api.flatters._session == session
     assert flattr_api.subscriptions._session == session
 
-    with raises(NotImplemented):
+    with raises(NotImplementedError):
         flattr_api.activities
-    with raises(NotImplemented):
+    with raises(NotImplementedError):
         flattr_api.languages
-    with raises(NotImplemented):
+    with raises(NotImplementedError):
         flattr_api.categories
