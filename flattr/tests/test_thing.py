@@ -412,6 +412,11 @@ class FakeResponse:
                 'data': self.data,
                 'id': self.data.get('id', 1)}
 
+class FakeDeleteResponse(FakeResponse):
+
+    def json(self):
+        raise AttributeError('Should not be called')
+
 class FakeSession:
 
     def __init__(self, status_code=200):
@@ -419,6 +424,9 @@ class FakeSession:
 
     def post(self, url, data):
         return FakeResponse(url, data, status_code=self.status_code)
+
+    def delete(self, url, params=None):
+        return FakeDeleteResponse(url, params, status_code=self.status_code)
 
 def test_support():
     t = Thing(session=FakeSession(), id=1)
@@ -452,7 +460,7 @@ def test_commit_update():
     assert ret is None
 
 def test_delete():
-    t = Thing(session=FakeSession(), url='https://chrigl.de', id=2)
+    t = Thing(session=FakeSession(status_code=204), url='https://chrigl.de', id=2)
     ret = t.delete()
 
     assert t._dirty == True

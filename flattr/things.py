@@ -248,6 +248,18 @@ class Thing(flattr.resource.Resource):
         """ Unsubscribe from thing, if currently subscribed. """
         raise NotImplementedError
 
+    def delete(self):
+        """ Delete this thing. """
+        res = self._delete()
+        self._dirty = True
+        self._id = None
+        return res
+
+    @flattr.just_json([204])
+    @flattr.delete('/:id')
+    def _delete(self):
+        return {}
+
     def _to_flattr_dict(self):
         """ Returns flattr compatible dict for posts """
         if not self.url:

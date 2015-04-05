@@ -1,11 +1,12 @@
 import re
 import six
+import types
 import functools
 import requests
 from simplejson.decoder import JSONDecodeError
 from flattr.exc import raise_exception
 
-def _handle_response(resp, accepted_codes=[200]):
+def _handle_response(resp, accepted_codes=[200], do_json=True):
     if resp is None:
         # If there is no response, most likely because no request happened,
         # just also return None.
@@ -20,7 +21,9 @@ def _handle_response(resp, accepted_codes=[200]):
             error = 'not_found'
             description = resp.text
         raise_exception(resp.status_code, error, description)
-    return resp.json()
+    if resp.status_code != 204:
+        return resp.json()
+    return ''
 
 
 def result(cls):
@@ -121,6 +124,10 @@ def delete(map_url, additional_headers={}):
         additional_headers=additional_headers)
 
 def refresh_thing_id(fn):
+    """ Returns the json result and sets the fields:
+       _id to new id
+       _dirty to False
+    """
     @functools.wraps(fn)
     def _refresh_thing_id(self, *args, **kwargs):
         resp = fn(self, *args, **kwargs)
@@ -133,15 +140,42 @@ def refresh_thing_id(fn):
         return res
     return _refresh_thing_id
 
-def just_json(fn):
-    @functools.wraps(fn)
-    def _just_json(self, *args, **kwargs):
-        resp = fn(self, *args, **kwargs)
-        res = _handle_response(resp)
-        if res is None:
-            return None
-        return res
-    return _just_json
+def just_json(param):
+    """ Decorator to just return json from request.
+    You can use it in two ways.
+    First, just passing the function:
+       @flattr.just_json
+       @flattr.get('/blah')
+       def test():
+           return {}
+    This accepts status_code 200 and returns a json.
+
+    You can also pass a list of accepted_status codes and the function:
+       @flattr.just_json([201, 204])
+       @flattr.get('/blah')
+       def test():
+           return {}
+    Now, status_codes 201 and 204 are accepted and the json is returned.
+    """
+    def _just_json(accepted_codes):
+        def __just_json(fn):
+            @functools.wraps(fn)
+            def ___just_json(self, *args, **kwargs):
+                resp = fn(self, *args, **kwargs)
+                res = _handle_response(resp, accepted_codes=accepted_codes)
+                if res is None:
+                    return None
+                return res
+            return ___just_json
+        return __just_json
+    # Some black magick. If param is a function, we accept status_code 200
+    # _and_ we pass param as a function to __just_json
+    #
+    # If param is not a function. Only _just_json will be called and
+    # __just_json is returned.
+    if isinstance(param, types.FunctionType):
+        return _just_json([200])(param)
+    return _just_json(param)
 
 def _get_query_dict(**kwargs):
     """Returns query dict by kwargs.

@@ -18,7 +18,7 @@ class PyTest(TestCommand):
 
 setup(name='flattr',
       version=version,
-      description="Implementation of a python client for the flattr restful api",
+      description="Implementation of a python library for the flattr restful api",
       long_description="""\
 """,
       classifiers=[
