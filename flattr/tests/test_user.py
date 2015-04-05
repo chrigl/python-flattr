@@ -175,15 +175,3 @@ def test_init():
     assert u.country == 'f10_country'
     assert u.email == 'f11_email'
     assert u.registered_at == 'f12_registered_at'
-
-def test_support():
-    u = User(session=None)
-    u.support()
-
-def test_subscribe():
-    u = User(session=None)
-    u.subscribe()
-
-def test_unsubscribe():
-    u = User(session=None)
-    u.unsubscribe()
