@@ -18,14 +18,22 @@ class PyTest(TestCommand):
 
 setup(name='flattr',
       version=version,
-      description="Implementation of the flattr restful api",
+      description="Implementation of a python client for the flattr restful api",
       long_description="""\
 """,
-      classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
+      classifiers=[
+          'Development Status :: 4 - Beta',
+          'License :: OSI Approved :: Apache Software License',
+          'Intended Audience :: Developers',
+          'Topic :: Software Development :: Libraries',
+          'Programming Language :: Python',
+          'Programming Language :: Python :: 2',
+          'Programming Language :: Python :: 3',
+          ],
       keywords='flattr',
       author='Christoph Glaubitz',
       author_email='chris@chrigl.de',
-      url='http://chrigl.de',
+      url='https://github.com/chrigl/python-flattr',
       license='Apache License 2.0',
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
       include_package_data=True,
