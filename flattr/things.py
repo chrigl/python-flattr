@@ -205,6 +205,7 @@ class Thing(flattr.resource.Resource):
         self._dirty = True
 
     # we also need some functionality
+    @flattr.just_json
     @flattr.post('/:id/flattr')
     def support(self):
         """ Flattr this particular thing.
@@ -237,6 +238,14 @@ class Thing(flattr.resource.Resource):
     def refresh(self):
         """ Refresh this particular thing. Only works if it exists already on
         flattr (id, resource, etc. obtained from flattr) """
+        raise NotImplementedError
+
+    def subscribe(self):
+        """ Subscribe to this thing, if currently unsubscribed. """
+        raise NotImplementedError
+
+    def unsubscribe(self):
+        """ Unsubscribe from thing, if currently subscribed. """
         raise NotImplementedError
 
     def _to_flattr_dict(self):

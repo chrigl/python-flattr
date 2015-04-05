@@ -4,6 +4,8 @@ import requests
 import flattr
 import flattr.user
 import flattr.things
+import flattr.flattrs
+import flattr.subscriptions
 import flattr.base
 
 def get(auth_token):
@@ -65,7 +67,7 @@ class UsersApi(flattr.base.BaseApi):
     def __call__(self, username):
         """Returns user object, only containing username.
         No api-call happens here"""
-        return flattr.user.User(username=username)
+        return flattr.user.User(session=self._session, username=username)
 
     @flattr.result(flattr.user.User)
     @flattr.get('/')
@@ -73,9 +75,46 @@ class UsersApi(flattr.base.BaseApi):
         """Get the flattr user."""
         return username
 
+class AuthenticatedApi(flattr.base.BaseApi):
+
+    _endpoint = 'rest/v2/user'
+
+    @flattr.result(flattr.flattrs.Flattr)
+    @flattr.get('/flattrs')
+    def get_flattrs(self, count=None, page=None, full=None):
+        """ Get all flattrs all flattrs, the authenticated user did so far.
+        http://developers.flattr.net/api/resources/flattrs/#list-the-authenticated-users-flattrs
+        """
+        return flattr._get_query_dict(count=count, page=page, full=full)
+
+    @flattr.result(flattr.things.Thing)
+    @flattr.get('/things')
+    def get_things(self, count=None, page=None, full=None):
+        """ Get all things of the authenticated user.
+        http://developers.flattr.net/api/resources/things/#list-a-authenticated-users-things
+        """
+        return flattr._get_query_dict(count=count, page=page, full=full)
+
+    @flattr.result(flattr.subscriptions.Subscription)
+    @flattr.get('/subscriptions')
+    def get_subscriptions(self):
+        """ Get all subscriptions of the authenticated user.
+        http://developers.flattr.net/api/resources/subscriptions/#list-subscriptions
+        """
+        return {}
+
+    @flattr.just_json
+    @flattr.get('/activities',
+            additional_headers={'Accept': 'application/stream+json'})
+    def get_activities(self, type=None):
+        """ Get all activities os the authenticated user.
+        http://developers.flattr.net/api/resources/activities/#list-a-authenticated-users-activities
+        """
+        return flattr._get_query_dict(type=type)
 
 things = ThingApi(None)
 users = UsersApi(None)
+authenticated = AuthenticatedApi(None)
 
 class FlattrApi(flattr.base.BaseApi):
 
@@ -86,3 +125,5 @@ class FlattrApi(flattr.base.BaseApi):
         self.things._session = session
         self.users = users
         self.users._session = session
+        self.authenticated = authenticated
+        self.authenticated._session = session

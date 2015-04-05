@@ -101,3 +101,12 @@ class User(flattr.resource.Resource):
     @flattr.get('/:username/flattrs')
     def get_flattrs(self, count=None, page=None, full=False):
         return flattr._get_query_dict(count=count, page=page, full=full)
+
+    def subscribe(self):
+        """ Subscribe to this user, if currently unsubscribed. """
+        raise NotImplementedError
+
+    def unsubscribe(self):
+        """ Unsubscribe from user, if currently subscribed. """
+        raise NotImplementedError
+

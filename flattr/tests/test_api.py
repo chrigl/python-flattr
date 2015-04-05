@@ -1,6 +1,8 @@
 from flattr import api
 import flattr.base
 import flattr.things
+import flattr.flattrs
+import flattr.subscriptions
 from pytest import raises
 import requests
 
@@ -55,20 +57,99 @@ def test_FlattrApi():
 
     assert hasattr(flattr_api, 'things')
     assert hasattr(flattr_api, 'users')
-    assert hasattr(flattr_api, 'flattrs')
-    assert hasattr(flattr_api, 'subscriptions')
-    assert hasattr(flattr_api, 'activities')
-    assert hasattr(flattr_api, 'categories')
-    assert hasattr(flattr_api, 'languages')
+    assert hasattr(flattr_api, 'authenticated')
 
     assert flattr_api.things._session == session
     assert flattr_api.users._session == session
-    assert flattr_api.flatters._session == session
-    assert flattr_api.subscriptions._session == session
+    assert flattr_api.authenticated._session == session
 
-    with raises(NotImplementedError):
-        flattr_api.activities
-    with raises(NotImplementedError):
-        flattr_api.languages
-    with raises(NotImplementedError):
-        flattr_api.categories
+class FakeResource:
+
+    def __init__(self, url, params, status_code=200):
+        self.params = params
+        self.url = url
+        # need this!! since magick is checking for 200
+        self.status_code = status_code
+
+class FakeThing(FakeResource):
+
+    def json(self):
+        return {'url': self.url,
+                'link': self.params}
+
+class FakeSubscription(FakeResource):
+
+    def json(self):
+        return {'created_at': self.url,
+                'started_at': self.params}
+
+class FakeFlattr(FakeResource):
+
+    def json(self):
+        return {'created_at': self.url,
+                'owner': self.params}
+
+class FakeSession:
+
+    def __init__(self, ret_cls, status_code=200):
+        self.status_code = status_code
+        self.ret_cls = ret_cls
+        self.headers = {'Accept': 'application/json'}
+
+    def get(self, url, params, headers={}):
+        return self.ret_cls(url, params)
+
+def test_authentivated_api_things():
+    flattr_api = api.AuthenticatedApi(session=FakeSession(FakeThing))
+
+    res = flattr_api.get_things()
+    assert isinstance(res, flattr.things.Thing)
+
+    assert res.url == 'https://api.flattr.com/rest/v2/user/things'
+    assert res.link == {}
+
+    res = flattr_api.get_things(count=30, page=1, full=True)
+
+    assert res.link == {'count': 30,
+                        'page': 1,
+                        'full': True}
+
+def test_authentivated_api_subscriptions():
+    flattr_api = api.AuthenticatedApi(session=FakeSession(FakeSubscription))
+
+    res = flattr_api.get_subscriptions()
+    assert isinstance(res, flattr.subscriptions.Subscription)
+
+    assert res.created_at == 'https://api.flattr.com/rest/v2/user/subscriptions'
+    assert res.started_at == {}
+
+    with raises(TypeError):
+        flattr_api.get_subscriptions(True)
+
+def test_authentivated_api_flattrs():
+    flattr_api = api.AuthenticatedApi(session=FakeSession(FakeFlattr))
+
+    res = flattr_api.get_flattrs()
+    assert isinstance(res, flattr.flattrs.Flattr)
+
+    assert res.created_at == 'https://api.flattr.com/rest/v2/user/flattrs'
+    assert res.owner == {}
+
+    res = flattr_api.get_flattrs(count=30, page=1, full=True)
+
+    assert res.owner == {'count': 30,
+                         'page': 1,
+                         'full': True}
+
+def test_authentivated_api_activities():
+    flattr_api = api.AuthenticatedApi(session=FakeSession(FakeThing))
+
+    res = flattr_api.get_activities()
+    assert isinstance(res, dict)
+
+    assert res['url'] == 'https://api.flattr.com/rest/v2/user/activities'
+    assert res['link'] == {}
+
+    res = flattr_api.get_activities(type='incoming')
+
+    assert res['link'] == {'type': 'incoming'}

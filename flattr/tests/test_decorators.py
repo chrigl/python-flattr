@@ -78,8 +78,10 @@ def test_api_call():
     def _fake_func(self, a='b'):
         return {'a': a}
     class DummySession:
-        def get(self, url, params=None):
-            return url, params
+        def __init__(self):
+            self.headers = {'Accept': 'application/json', 'One': 'Field'}
+        def get(self, url, params=None, headers=None):
+            return url, params, headers
 
     class DummyRequest:
         _session = DummySession()
@@ -89,23 +91,27 @@ def test_api_call():
 
     dummy = DummyRequest()
     ret = flattr._api_call('/my/test/foo')(_fake_func)(dummy)
-    assert ret == ('http://localhost/my/test/foo', {'a': 'b'})
+    assert ret == ('http://localhost/my/test/foo', {'a': 'b'}, None)
 
     ret = flattr._api_call('/:my/test/foo')(_fake_func)(dummy, a='c')
-    assert ret == ('http://localhost/hello/test/foo', {'a': 'c'})
+    assert ret == ('http://localhost/hello/test/foo', {'a': 'c'}, None)
 
     ret = flattr._api_call('/my/')(lambda x: 'test,foo')(dummy)
-    assert ret == ('http://localhost/my/test,foo', {})
+    assert ret == ('http://localhost/my/test,foo', {}, None)
 
     ret = flattr._api_call('/my')(lambda x: 'test,foo')(dummy)
-    assert ret == ('http://localhost/my/test,foo', {})
+    assert ret == ('http://localhost/my/test,foo', {}, None)
 
     ret = flattr._api_call('/my')(lambda x: False)(dummy)
     assert ret == None
 
     ret = flattr._api_call('/my/test/foo',
             additional_params={'_method': 'patch'})(_fake_func)(dummy)
-    assert ret == ('http://localhost/my/test/foo', {'a': 'b', '_method': 'patch'})
+    assert ret == ('http://localhost/my/test/foo', {'a': 'b', '_method': 'patch'}, None)
+
+    ret = flattr._api_call('/my/test/foo', additional_headers={'Accept': 'application/stream+json'})(_fake_func)(dummy)
+    assert ret == ('http://localhost/my/test/foo', {'a': 'b'},
+            {'Accept': 'application/stream+json', 'One': 'Field'})
 
 def test_get():
     def _fake_func(self, a='b'):

@@ -423,12 +423,10 @@ class FakeSession:
 def test_support():
     t = Thing(session=FakeSession(), id=1)
     ret = t.support()
-    assert isinstance(ret, FakeResponse)
 
-    res = ret.json()
-
-    assert res['url'] == 'https://api.flattr.com/rest/v2/things/1/flattr'
-    assert res['data'] == {}
+    # ret['id'] does not matter here, just part of test mock stuff
+    assert ret['url'] == 'https://api.flattr.com/rest/v2/things/1/flattr'
+    assert ret['data'] == {}
 
 def test_commit_create():
     t = Thing(session=FakeSession(status_code=201), url='https://chrigl.de')
@@ -464,6 +462,14 @@ def test_refresh():
     # this might be removed
     t = Thing()
     t.refresh()
+
+def test_subscribe():
+    t = Thing(session=None)
+    t.subscribe()
+
+def test_unsubscribe():
+    t = Thing(session=None)
+    t.unsubscribe()
 
 def test_to_flattr_dict():
     t = Thing()

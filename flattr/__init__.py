@@ -52,7 +52,8 @@ def _replace_(ob, parts):
         else:
             yield part
 
-def _api_call(map_url, method='get', additional_params={}):
+def _api_call(map_url, method='get', additional_params={},
+        additional_headers={}):
     def __api_call(fn):
         @functools.wraps(fn)
         def ___api_call(self, *args, **kwargs):
@@ -82,20 +83,28 @@ def _api_call(map_url, method='get', additional_params={}):
             if method in ('post', 'patch', 'put'):
                 # On posting style method, the field called data instead of
                 # params.
-                return req_fn(url, data=q)
-            return req_fn(url, params=q)
+                do_request = functools.partial(req_fn, url, data=q)
+            else:
+                do_request = functools.partial(req_fn, url, params=q)
+            if additional_headers:
+                # If there are additional headers for one special request
+                headers = self._session.headers
+                headers.update(additional_headers)
+                return do_request(headers=headers)
+            return do_request()
         return ___api_call
     return __api_call
 
-def get(map_url):
+def get(map_url, additional_headers={}):
     """ GET request to flattr api """
-    return _api_call(map_url)
+    return _api_call(map_url, additional_headers=additional_headers)
 
-def post(map_url):
+def post(map_url, additional_headers={}):
     """ POST request to flattr api """
-    return _api_call(map_url, method='post')
+    return _api_call(map_url, method='post',
+            additional_headers=additional_headers)
 
-def patch(map_url):
+def patch(map_url, additional_headers={}):
     """ PATCH request to flattr api.
 
     due to a problem at flattrs api, patch must be post with the additional
@@ -103,11 +112,13 @@ def patch(map_url):
     http://developers.flattr.net/api/resources/things/#update-a-thing
     """
     return _api_call(map_url, method='post',
-            additional_params={'_method': 'patch'})
+            additional_params={'_method': 'patch'},
+            additional_headers=additional_headers)
 
-def delete(map_url):
+def delete(map_url, additional_headers={}):
     """ DELETE request to flattr api. """
-    return _api_call(map_url, method='delete')
+    return _api_call(map_url, method='delete',
+        additional_headers=additional_headers)
 
 def refresh_thing_id(fn):
     @functools.wraps(fn)
