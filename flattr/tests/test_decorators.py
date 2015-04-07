@@ -1,6 +1,6 @@
 import six
 import types
-from pytest import raises
+import pytest
 import flattr
 from flattr.exc import NotFoundError, InvalidScopeError
 from simplejson.decoder import JSONDecodeError
@@ -41,36 +41,52 @@ class DummyReturn:
         for k, v in six.iteritems(kwargs):
             setattr(self, k, v)
 
-def test_result_fails():
-    with raises(NotFoundError):
-        res = flattr.result(DummyReturn)(lambda self: FakeResponse(404, 'not_found'))(DummyRequestClass())
+@pytest.fixture
+def fake_response_cls():
+    return FakeResponse
 
-    with raises(InvalidScopeError):
-        flattr.result(DummyReturn)(lambda self: FakeResponse(403, 'invalid_scope'))(DummyRequestClass())
+@pytest.fixture
+def fake_response_list_cls():
+    return FakeResponseList
 
-def test_result():
-    res = flattr.result(DummyReturn)(lambda self: FakeResponse(200, 'nothing'))(DummyRequestClass())
+@pytest.fixture
+def dummy_request_cls():
+    return DummyRequestClass
 
-    assert isinstance(res, DummyReturn)
+@pytest.fixture
+def dummy_return_cls():
+    return DummyReturn
+
+def test_result_fails(dummy_return_cls, fake_response_cls, dummy_request_cls):
+    with pytest.raises(NotFoundError):
+        res = flattr.result(dummy_return_cls)(lambda self: fake_response_cls(404, 'not_found'))(dummy_request_cls())
+
+    with pytest.raises(InvalidScopeError):
+        flattr.result(dummy_return_cls)(lambda self: fake_response_cls(403, 'invalid_scope'))(dummy_request_cls())
+
+def test_result(dummy_return_cls, fake_response_cls, dummy_request_cls):
+    res = flattr.result(dummy_return_cls)(lambda self: fake_response_cls(200, 'nothing'))(dummy_request_cls())
+
+    assert isinstance(res, dummy_return_cls)
     assert res.some == 'correct json'
 
-def test_result_list():
-    gen = flattr.result(DummyReturn)(lambda self: FakeResponseList(200, 'nothing'))(DummyRequestClass())
+def test_result_list(dummy_return_cls, fake_response_list_cls, dummy_request_cls):
+    gen = flattr.result(dummy_return_cls)(lambda self: fake_response_list_cls(200, 'nothing'))(dummy_request_cls())
 
     assert isinstance(gen, types.GeneratorType)
 
     res = next(gen)
-    assert isinstance(res, DummyReturn)
+    assert isinstance(res, dummy_return_cls)
     assert res.some == 'correct json'
 
-    with raises(StopIteration):
+    with pytest.raises(StopIteration):
         next(gen)
 
-def test_result_None():
+def test_result_None(dummy_return_cls, dummy_request_cls):
     # if the response is None, very likely, the call did not happen, because
     # not necessary in this case. e.g. it is not necessary to update a thing
     # if it is not dirty. So we can save api-calls if nothing real is to do.
-    res = flattr.result(DummyReturn)(lambda self: None)(DummyRequestClass())
+    res = flattr.result(dummy_return_cls)(lambda self: None)(dummy_request_cls())
 
     assert res == None
 

@@ -3,7 +3,7 @@ import flattr.base
 import flattr.things
 import flattr.flattrs
 import flattr.subscriptions
-from pytest import raises
+import pytest
 import requests
 
 def test_get():
@@ -25,18 +25,18 @@ def test_BaseApi():
 
     old_api_url = flattr_api._api_url
     flattr_api._api_url = None
-    with raises(AssertionError):
+    with pytest.raises(AssertionError):
         flattr_api._get_url()
 
     flattr_api._api_url = old_api_url
-    with raises(AssertionError):
+    with pytest.raises(AssertionError):
         flattr_api._get_url()
 
     flattr_api._endpoint = 'endpoint'
     res = flattr_api._get_url()
     assert res == 'https://api.flattr.com/endpoint'
 
-    with raises(NotImplementedError):
+    with pytest.raises(NotImplementedError):
         flattr_api.new()
 
 def test_FlattrApi_new():
@@ -99,8 +99,24 @@ class FakeSession:
     def get(self, url, params, headers={}):
         return self.ret_cls(url, params)
 
-def test_authentivated_api_things():
-    flattr_api = api.AuthenticatedApi(session=FakeSession(FakeThing))
+@pytest.fixture
+def fake_session_cls():
+    return FakeSession
+
+@pytest.fixture
+def fake_thing_cls():
+    return FakeThing
+
+@pytest.fixture
+def fake_subscription_cls():
+    return FakeSubscription
+
+@pytest.fixture
+def fake_flattr_cls():
+    return FakeFlattr
+
+def test_authentivated_api_things(fake_session_cls, fake_thing_cls):
+    flattr_api = api.AuthenticatedApi(session=fake_session_cls(fake_thing_cls))
 
     res = flattr_api.get_things()
     assert isinstance(res, flattr.things.Thing)
@@ -114,8 +130,8 @@ def test_authentivated_api_things():
                         'page': 1,
                         'full': True}
 
-def test_authentivated_api_subscriptions():
-    flattr_api = api.AuthenticatedApi(session=FakeSession(FakeSubscription))
+def test_authentivated_api_subscriptions(fake_session_cls, fake_subscription_cls):
+    flattr_api = api.AuthenticatedApi(session=fake_session_cls(fake_subscription_cls))
 
     res = flattr_api.get_subscriptions()
     assert isinstance(res, flattr.subscriptions.Subscription)
@@ -123,11 +139,11 @@ def test_authentivated_api_subscriptions():
     assert res.created_at == 'https://api.flattr.com/rest/v2/user/subscriptions'
     assert res.started_at == {}
 
-    with raises(TypeError):
+    with pytest.raises(TypeError):
         flattr_api.get_subscriptions(True)
 
-def test_authentivated_api_flattrs():
-    flattr_api = api.AuthenticatedApi(session=FakeSession(FakeFlattr))
+def test_authentivated_api_flattrs(fake_session_cls, fake_flattr_cls):
+    flattr_api = api.AuthenticatedApi(session=fake_session_cls(fake_flattr_cls))
 
     res = flattr_api.get_flattrs()
     assert isinstance(res, flattr.flattrs.Flattr)
@@ -141,8 +157,8 @@ def test_authentivated_api_flattrs():
                          'page': 1,
                          'full': True}
 
-def test_authentivated_api_activities():
-    flattr_api = api.AuthenticatedApi(session=FakeSession(FakeThing))
+def test_authentivated_api_activities(fake_session_cls, fake_thing_cls):
+    flattr_api = api.AuthenticatedApi(session=fake_session_cls(fake_thing_cls))
 
     res = flattr_api.get_activities()
     assert isinstance(res, dict)
