@@ -63,7 +63,7 @@ def test_FlattrApi():
     assert flattr_api.users._session == session
     assert flattr_api.authenticated._session == session
 
-class FakeResource:
+class FakeResource(object):
 
     def __init__(self, url, params, status_code=200):
         self.params = params
@@ -89,7 +89,7 @@ class FakeFlattr(FakeResource):
         return {'created_at': self.url,
                 'owner': self.params}
 
-class FakeSession:
+class FakeSession(object):
 
     def __init__(self, ret_cls, status_code=200):
         self.status_code = status_code

@@ -43,7 +43,7 @@ def result(cls):
 
 def _replace_(ob, parts):
     """Repaces parts by object values
-    >>> class A:
+    >>> class A(object):
     ...     _username = 'my'
     ...     _testing = 'test'
     >>> '/'.join(_replace_(A(), ['this', ':username', 'is', ':testing', 'stuff']))

@@ -5,7 +5,7 @@ import flattr
 from flattr.exc import NotFoundError, InvalidScopeError
 from simplejson.decoder import JSONDecodeError
 
-class FakeResponse:
+class FakeResponse(object):
     def __init__(self, status_code, error_name):
         self.status_code = status_code
         self.error_name = error_name
@@ -31,12 +31,12 @@ class FakeResponseList(FakeResponse):
                 'error_description': 'something, somewhere, somehow went wrong'}
         return [{'some': 'correct json'}]
 
-class DummyRequestClass:
+class DummyRequestClass(object):
     def __init__(self):
         self._session = 'FAKE_SESSION'
 
 
-class DummyReturn:
+class DummyReturn(object):
     def __init__(self, *args, **kwargs):
         for k, v in six.iteritems(kwargs):
             setattr(self, k, v)
@@ -93,13 +93,13 @@ def test_result_None(dummy_return_cls, dummy_request_cls):
 def test_api_call():
     def _fake_func(self, a='b'):
         return {'a': a}
-    class DummySession:
+    class DummySession(object):
         def __init__(self):
             self.headers = {'Accept': 'application/json', 'One': 'Field'}
         def get(self, url, params=None, headers=None):
             return url, params, headers
 
-    class DummyRequest:
+    class DummyRequest(object):
         _session = DummySession()
         _my = 'hello'
         def _get_url(self):
@@ -132,11 +132,11 @@ def test_api_call():
 def test_get():
     def _fake_func(self, a='b'):
         return {'a': a}
-    class DummySession:
+    class DummySession(object):
         def get(self, url, params=None):
             return url, params
 
-    class DummyRequest:
+    class DummyRequest(object):
         _session = DummySession()
         _my = 'hello'
         def _get_url(self):
@@ -158,11 +158,11 @@ def test_get():
 def test_post():
     def _fake_func(self, a='b'):
         return {'a': a}
-    class DummySession:
+    class DummySession(object):
         def post(self, url, data=None):
             return url, data
 
-    class DummyRequest:
+    class DummyRequest(object):
         _session = DummySession()
         _my = 'hello'
         def _get_url(self):

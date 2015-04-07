@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-class BaseApi:
+class BaseApi(object):
     def __init__(self, session):
         """Just use session. This is pretty much an abstract class.
         session should be of type requests.sessions.Session."""

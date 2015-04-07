@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flattr.validators import isInt
 from flattr.validators import isStr
 from flattr.validators import isBinary
