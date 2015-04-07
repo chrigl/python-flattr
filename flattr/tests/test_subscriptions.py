@@ -3,7 +3,7 @@ from flattr.subscriptions import Subscription
 
 def test_subscription():
     subscription = Subscription(session='Hello World', created_at='now',
-            started_at='yesterday', thing={'title': 'testing'}, ignore_me=1)
+            started_at='yesterday', thing={'title': u'testing'}, ignore_me=1)
 
     assert subscription.active == True
     assert subscription._session == 'Hello World'

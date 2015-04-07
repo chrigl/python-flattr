@@ -45,7 +45,7 @@ def test_FlattrApi_new():
 
     assert flattr_api._session == session
 
-    res = flattr_api.new(id=1, title='Hello World')
+    res = flattr_api.new(id=1, title=u'Hello World')
     assert isinstance(res, flattr.things.Thing)
     assert res._session == session
     assert res.id == 1
@@ -121,7 +121,7 @@ def test_authentivated_api_things(fake_session_cls, fake_thing_cls):
     res = flattr_api.get_things()
     assert isinstance(res, flattr.things.Thing)
 
-    assert res.url == 'https://api.flattr.com/rest/v2/user/things'
+    assert res.url == u'https://api.flattr.com/rest/v2/user/things'
     assert res.link == {}
 
     res = flattr_api.get_things(count=30, page=1, full=True)

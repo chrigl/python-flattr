@@ -5,7 +5,8 @@ class BaseApi(object):
         """Just use session. This is pretty much an abstract class.
         session should be of type requests.sessions.Session."""
         self._session = session
-        self._api_url = 'https://api.flattr.com'
+        # Keep this to u'' for py2 compatibility
+        self._api_url = u'https://api.flattr.com'
 
     def _get_url(self):
         assert self._api_url != None

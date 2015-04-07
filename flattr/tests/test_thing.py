@@ -137,7 +137,7 @@ def test_updated_at():
 
 # test rw fields
 def test_title():
-    if sys.version < '3':
+    if sys.version_info.major < 3:
         res_title=u'f13_title'
     else:
         res_title='f13_title'
@@ -153,7 +153,7 @@ def test_title():
     with raises(TypeError):
         t.title = 1
 
-    if sys.version < '3':
+    if sys.version_info.major < 3:
         with raises(TypeError):
             t.title = 'f13_title'
     else:
@@ -161,7 +161,7 @@ def test_title():
             t.title = b'f13_title'
 
 def test_description():
-    if sys.version < '3':
+    if sys.version_info.major < 3:
         res_description=u'f13_description'
     else:
         res_description='f13_description'
@@ -177,7 +177,7 @@ def test_description():
     with raises(TypeError):
         t.description = 1
 
-    if sys.version < '3':
+    if sys.version_info.major < 3:
         with raises(TypeError):
             t.description = 'f13_description'
     else:
@@ -185,7 +185,7 @@ def test_description():
             t.description = b'f13_description'
 
 def test_language():
-    if sys.version < '3':
+    if sys.version_info.major < 3:
         res_language=u'f13_language'
     else:
         res_language='f13_language'
@@ -201,7 +201,7 @@ def test_language():
     with raises(TypeError):
         t.language = 1
 
-    if sys.version < '3':
+    if sys.version_info.major < 3:
         with raises(TypeError):
             t.language = 'f13_language'
     else:
@@ -209,7 +209,7 @@ def test_language():
             t.language = b'f13_language'
 
 def test_url():
-    if sys.version < '3':
+    if sys.version_info.major < 3:
         res_url=u'http://f13_url'
         res_urls=u'https://f13_url'
     else:
@@ -231,7 +231,7 @@ def test_url():
     with raises(TypeError):
         t.url = 1
 
-    if sys.version < '3':
+    if sys.version_info.major < 3:
         with raises(TypeError):
             t.url = 'http://f13_url'
     else:
@@ -239,7 +239,7 @@ def test_url():
             t.url = b'http://f13_url'
 
 def test_category():
-    if sys.version < '3':
+    if sys.version_info.major < 3:
         res_category=u'f13_category'
     else:
         res_category='f13_category'
@@ -255,7 +255,7 @@ def test_category():
     with raises(TypeError):
         t.category = 1
 
-    if sys.version < '3':
+    if sys.version_info.major < 3:
         with raises(TypeError):
             t.category = 'f13_category'
     else:
@@ -263,7 +263,7 @@ def test_category():
             t.category = b'f13_category'
 
 def test_tags():
-    if sys.version < '3':
+    if sys.version_info.major < 3:
         res_tags=[u'f16_t1', u'f16_t2']
     else:
         res_tags=['f16_t1', 'f16_t2']
@@ -279,7 +279,7 @@ def test_tags():
     with raises(TypeError):
         t.tags = 'Hello'
 
-    if sys.version < '3':
+    if sys.version_info.major < 3:
         with raises(TypeError):
             t.tags = ['Hello']
     else:
@@ -304,7 +304,7 @@ def test_hidden():
 
 # test constructor
 def test_init():
-    if sys.version < '3':
+    if sys.version_info.major < 3:
         res_title=u'f13_title'
         res_description=u'f14_description'
         res_url=u'http://xxx'
@@ -360,7 +360,7 @@ def test_init():
     assert t._dirty == True
 
 def test_init_validation():
-    if sys.version < '3':
+    if sys.version_info.major < 3:
         with raises(TypeError):
             t = Thing(description='Hello')
         with raises(TypeError):
@@ -437,7 +437,7 @@ def test_support():
     assert ret['data'] == {}
 
 def test_commit_create():
-    t = Thing(session=FakeSession(status_code=201), url='https://chrigl.de')
+    t = Thing(session=FakeSession(status_code=201), url=u'https://chrigl.de')
     ret = t.commit()
 
     assert ret['url'] == 'https://api.flattr.com/rest/v2/things/'
@@ -446,7 +446,7 @@ def test_commit_create():
     assert t._dirty == False
 
 def test_commit_update():
-    t = Thing(session=FakeSession(), url='https://chrigl.de', id=2)
+    t = Thing(session=FakeSession(), url=u'https://chrigl.de', id=2)
     ret = t.commit()
 
     assert ret['url'] == 'https://api.flattr.com/rest/v2/things/2'
@@ -460,7 +460,7 @@ def test_commit_update():
     assert ret is None
 
 def test_delete():
-    t = Thing(session=FakeSession(status_code=204), url='https://chrigl.de', id=2)
+    t = Thing(session=FakeSession(status_code=204), url=u'https://chrigl.de', id=2)
     ret = t.delete()
 
     assert t._dirty == True
@@ -488,16 +488,16 @@ def test_to_flattr_dict():
     with raises(AttributeError):
         t._to_flattr_dict()
 
-    t.url = 'http://flattr.com'
+    t.url = u'http://flattr.com'
 
     ret = t._to_flattr_dict()
     assert ret == {'url': 'http://flattr.com', 'hidden': False}
 
-    t.title = 'Hello World'
-    t.description = 'Some description'
-    t.category = 'cat'
-    t.language = 'de_DE'
-    t.tags = ['test', 'me']
+    t.title = u'Hello World'
+    t.description = u'Some description'
+    t.category = u'cat'
+    t.language = u'de_DE'
+    t.tags = [u'test', u'me']
     t.hidden=True
 
     ret = t._to_flattr_dict()
@@ -514,6 +514,6 @@ def test_repr():
     res = repr(t)
     assert res == '<flattr.things.Thing at %s>' % id(t)
 
-    t.title = 'Hello World'
+    t.title = u'Hello World'
     res = repr(t)
     assert res == '<flattr.things.Thing Hello World>'

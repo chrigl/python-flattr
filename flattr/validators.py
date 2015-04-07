@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+import six
 import sys
 import re
 import itertools
@@ -57,7 +57,7 @@ def isStr(x):
     There are more python version dependend tests in
     tests/test_validators.py
     """
-    if sys.version < '3':
+    if sys.version_info.major < 3:
         return isinstance(x, unicode)
     return isinstance(x, str)
 
@@ -70,7 +70,7 @@ def isBinary(x):
     There are more python version dependend tests in
     tests/test_validators.py
     """
-    if sys.version < '3':
+    if sys.version_info.major < 3:
         return isinstance(x, str)
     return isinstance(x, bytes)
 
