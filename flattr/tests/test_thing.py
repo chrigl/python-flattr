@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 from flattr.things import Thing
 from pytest import raises
@@ -512,8 +513,10 @@ def test_repr():
     t = Thing()
 
     res = repr(t)
+    isinstance(res, str)
     assert res == '<flattr.things.Thing at %s>' % id(t)
 
-    t.title = u'Hello World'
+    t.title = u'Hello Wörld'
     res = repr(t)
-    assert res == '<flattr.things.Thing Hello World>'
+    isinstance(res, str)
+    assert res == '<flattr.things.Thing Hello Wörld>'
