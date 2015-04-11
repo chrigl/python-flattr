@@ -7,6 +7,7 @@ import flattr.things
 import flattr.flattrs
 import flattr.subscriptions
 import flattr.base
+import flattr.search
 
 def get(auth_token):
     session = requests.Session()
@@ -38,7 +39,7 @@ class ThingApi(flattr.base.BaseApi):
         Returns one thing."""
         return {'url': url}
 
-    @flattr.result(flattr.things.Thing)
+    @flattr.result(flattr.search.SearchResult)
     @flattr.get('/search')
     def search(self, query=None, url=None, tags=None, language=None,
         category=None, user=None, sort=None, page=None, count=None, full=False):
