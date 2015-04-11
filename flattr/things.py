@@ -241,12 +241,43 @@ class Thing(flattr.resource.Resource):
         raise NotImplementedError
 
     def subscribe(self):
+        res = self._subscribe()
+        if res is not None:
+            self._subscribed = True
+        return res
+
+    @flattr.just_json
+    @flattr.post('/:id/subscriptions')
+    def _subscribe(self):
         """ Subscribe to this thing, if currently unsubscribed. """
-        raise NotImplementedError
+        if self.subscribed:
+            return False
+        return {}
+
+    def pause_subscription(self):
+        res = self._pause_subscription()
+        self._subscribed = not self.subscribed
+        return res
+
+    @flattr.just_json
+    @flattr.put('/:id/subscriptions')
+    def _pause_subscription(self):
+        """ Pause or resume your subscription of the thing. """
+        return {}
 
     def unsubscribe(self):
+        res = self._unsubscribe()
+        if res is not None:
+            self._subscribed = False
+        return res
+
+    @flattr.just_json([204])
+    @flattr.delete('/:id/subscriptions')
+    def _unsubscribe(self):
         """ Unsubscribe from thing, if currently subscribed. """
-        raise NotImplementedError
+        if not self.subscribed:
+            return False
+        return {}
 
     def delete(self):
         """ Delete this thing. """

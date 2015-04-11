@@ -38,3 +38,8 @@ class Subscription(flattr.resource.Resource):
     def started_at(self):
         """ Returns started_at """
         return getattr(self, '_started_at', None)
+
+    @property
+    def thing(self):
+        """ Returns the subscribed thing """
+        return getattr(self, '_thing', None)

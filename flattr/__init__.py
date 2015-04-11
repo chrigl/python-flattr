@@ -107,6 +107,11 @@ def post(map_url, additional_headers={}):
     return _api_call(map_url, method='post',
             additional_headers=additional_headers)
 
+def put(map_url, additional_headers={}):
+    """ PUT request to flattr api """
+    return _api_call(map_url, method='put',
+            additional_headers=additional_headers)
+
 def patch(map_url, additional_headers={}):
     """ PATCH request to flattr api.
 

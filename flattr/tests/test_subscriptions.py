@@ -10,6 +10,7 @@ def test_subscription():
     assert subscription.created_at == 'now'
     assert subscription.started_at == 'yesterday'
     assert isinstance(subscription._thing, Thing)
+    assert isinstance(subscription.thing, Thing)
     assert subscription._thing._session is subscription._session
 
     res = repr(subscription)
