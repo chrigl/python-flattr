@@ -181,7 +181,7 @@ to pause and resume this subscription.
 
 Feel free to use ``help`` on different stuff. Where it is much more useful to
 use python3, since internaly some decorators are used, which results in
-`*args, **kwargs`-argument-lists in python2.
+``*args, **kwargs``-argument-lists in python2.
 
 Issues
 ------
