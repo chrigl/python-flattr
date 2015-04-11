@@ -3,7 +3,13 @@ import flattr.resource
 class Flattr(flattr.resource.Resource):
     def __init__(self, session=None, thing=None, owner=None, created_at=None,
                  **kwargs):
-        """A flattr/support object"""
+        """A flattr/support object
+
+        :params session: `requests.session.Session`.
+        :params thing: flattr belong to this thing.
+        :params owner: owner of the thing.
+        :params created_at: means flattred at.
+        """
         # ignored fields: kwargs
         # so lib will not break if flattr-api adds a new field
         self._thing = thing

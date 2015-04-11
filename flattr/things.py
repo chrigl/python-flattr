@@ -19,7 +19,27 @@ class Thing(flattr.resource.Resource):
                  updated_at=None, title=None, description=None, url=None,
                  tags=None, category=None, language=None, hidden=False,
                  subscribed=False, dirty=True, **kwargs):
-        """ Initialize with data of an dictionary """
+        """ Initialize with data of an dictionary
+
+        :param session: `requests.session.Session`.
+        :param resource: URI in flattrs api.
+        :param link: URI in flattrs web-ui.
+        :param id: flattr id.
+        :param owner: ...
+        :param image: ...
+        :param flattred: If already supported.
+        :param last_flattr_at: ...
+        :param updated_at: ...
+        :param title: Main title.
+        :param description: A little more than a title.
+        :param url: Real url of the thing in the web.
+        :param tags: Some keywords.
+        :param categories: ...
+        :param language: ...
+        :param hidden: Is this thing public available.
+        :param subscribed: Are you subscribed to it.
+        :param dirty: Internal flag to detect necessary updates.
+        """
         # ignored fields: kwargs
         # so lib will not break if flattr-api adds a new field
         super(Thing, self).__init__(session)
@@ -128,7 +148,10 @@ class Thing(flattr.resource.Resource):
     @url.setter
     @validate(isUrl)
     def url(self, v):
-        """ set url """
+        """ set url
+
+        :param v: value
+        """
         self._url = v
         self._dirty = True
 
@@ -140,7 +163,10 @@ class Thing(flattr.resource.Resource):
     @title.setter
     @validate(isStr)
     def title(self, v):
-        """ set title """
+        """ set title
+
+        :param v: value
+        """
         self._title = v
         self._dirty = True
 
@@ -152,7 +178,10 @@ class Thing(flattr.resource.Resource):
     @description.setter
     @validate(isStr)
     def description(self, v):
-        """ set description """
+        """ set description
+
+        :param v: value
+        """
         self._description = v
         self._dirty = True
 
@@ -164,7 +193,10 @@ class Thing(flattr.resource.Resource):
     @tags.setter
     @validate(isStrList)
     def tags(self, v):
-        """ set tags """
+        """ set tags
+
+        :param v: value
+        """
         self._tags = v
         self._dirty = True
 
@@ -176,7 +208,10 @@ class Thing(flattr.resource.Resource):
     @language.setter
     @validate(isStr)
     def language(self, v):
-        """ set language """
+        """ set language
+
+        :param v: value
+        """
         self._language = v
         self._dirty = True
 
@@ -188,7 +223,10 @@ class Thing(flattr.resource.Resource):
     @category.setter
     @validate(isStr)
     def category(self, v):
-        """ set category """
+        """ set category
+
+        :param v: value
+        """
         self._category = v
         self._dirty = True
 
@@ -200,7 +238,10 @@ class Thing(flattr.resource.Resource):
     @hidden.setter
     @validate(isBool)
     def hidden(self, v):
-        """ set hidden """
+        """ set hidden
+
+        :param v: value
+        """
         self._hidden = v
         self._dirty = True
 
@@ -241,6 +282,7 @@ class Thing(flattr.resource.Resource):
         raise NotImplementedError
 
     def subscribe(self):
+        """ Subscribe to this thing, if currently unsubscribed. """
         res = self._subscribe()
         if res is not None:
             self._subscribed = True
@@ -255,6 +297,7 @@ class Thing(flattr.resource.Resource):
         return {}
 
     def pause_subscription(self):
+        """ Pause or resume your subscription of the thing. """
         res = self._pause_subscription()
         self._subscribed = not self.subscribed
         return res
@@ -266,6 +309,7 @@ class Thing(flattr.resource.Resource):
         return {}
 
     def unsubscribe(self):
+        """ Unsubscribe from thing, if currently subscribed. """
         res = self._unsubscribe()
         if res is not None:
             self._subscribed = False
@@ -311,4 +355,10 @@ class Thing(flattr.resource.Resource):
     @flattr.result(flattr.flattrs.Flattr)
     @flattr.get('/:id/flattrs')
     def get_flattrs(self, count=None, page=None, full=False):
+        """ Get flattrs of this thing.
+
+        :param page: (Optional) - integer The result page to show
+        :param count: (Optional) - integer Number of items per page
+        :param full: ( Optional ) - Receive full user object instead of small
+        """
         return flattr._get_query_dict(count=count, page=page, full=full)

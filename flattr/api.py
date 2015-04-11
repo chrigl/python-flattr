@@ -10,6 +10,9 @@ import flattr.base
 import flattr.search
 
 def get(auth_token):
+    """ Returns an `flattr.api.FlattrApi` object, initialized with a
+    session object of `requests.session.Session`.
+    """
     session = requests.Session()
     session.headers.update({'Accept': 'application/json',
         'Authorization': 'Bearer %s' % auth_token})
@@ -29,14 +32,19 @@ class ThingApi(flattr.base.BaseApi):
     def get(self, *args):
         """Get one or more thing.
         Pass as much thing ids as parameter as you need to.
-        Returns either one thing, or a generator of things."""
+        Returns either one thing, or a generator of things.
+
+        :param *args: Really. It will be ','.join(args)'ed."""
         return ','.join(args)
 
     @flattr.result(flattr.things.Thing)
     @flattr.get('/lookup')
     def lookup(self, url):
         """Check if a thing exists.
-        Returns one thing."""
+        Returns one thing.
+
+        :param url: Lookup a thing for this url
+        """
         return {'url': url}
 
     @flattr.result(flattr.search.SearchResult)
@@ -45,16 +53,16 @@ class ThingApi(flattr.base.BaseApi):
         category=None, user=None, sort=None, page=None, count=None, full=False):
         """Search a thing
 
-        query (Optional) - string Free text search string
-        url (Optional) - string Filter by url
-        tags (Optional) - string Filter by tags, see syntax below
-        language (Optional) - string Filter by language. If you wan't to search more than one language you can separate them with a , (comma).
-        category (Optional) - string Filter by category. If you wan't to search more than one category you can separate them with a , (comma).
-        user (Optional) - string Filter by username
-        sort (Optional) - string Sort by trend, flattrs (all time), flattrs_month, flattrs_week, flattrs_day or relevance (default)
-        page (Optional) - integer The result page to show
-        count (Optional) - integer Number of items per page
-        full ( Optional ) - Receive full user object instead of small
+        :param query: (Optional) - string Free text search string
+        :param url: (Optional) - string Filter by url
+        :param tags: (Optional) - string Filter by tags, see syntax below
+        :param language: (Optional) - string Filter by language. If you wan't to search more than one language you can separate them with a , (comma).
+        :param category: (Optional) - string Filter by category. If you wan't to search more than one category you can separate them with a , (comma).
+        :param user: (Optional) - string Filter by username
+        :param sort: (Optional) - string Sort by trend, flattrs (all time), flattrs_month, flattrs_week, flattrs_day or relevance (default)
+        :param page: (Optional) - integer The result page to show
+        :param count: (Optional) - integer Number of items per page
+        :param full: ( Optional ) - Receive full user object instead of small
         """
         q = flattr._get_query_dict(query=query, url=url, tags=tags,
                 language=language, category=category, user=user, sort=sort,
@@ -67,13 +75,17 @@ class UsersApi(flattr.base.BaseApi):
 
     def __call__(self, username):
         """Returns user object, only containing username.
-        No api-call happens here"""
+        No api-call happens here.
+
+        :param username: Make a `flattr.user.User` with this username."""
         return flattr.user.User(session=self._session, username=username)
 
     @flattr.result(flattr.user.User)
     @flattr.get('/')
     def get(self, username):
-        """Get the flattr user."""
+        """Get the flattr user.
+
+        :param username: Get the user from flattr."""
         return username
 
 class AuthenticatedApi(flattr.base.BaseApi):
@@ -85,6 +97,10 @@ class AuthenticatedApi(flattr.base.BaseApi):
     def get_flattrs(self, count=None, page=None, full=None):
         """ Get all flattrs all flattrs, the authenticated user did so far.
         http://developers.flattr.net/api/resources/flattrs/#list-the-authenticated-users-flattrs
+
+        :param count: (Optional) - Count elements in a batch. Default 30.
+        :param page: (Optional) - Get page X of the result set.
+        :param full: (Optional) - Get the all owner fields.
         """
         return flattr._get_query_dict(count=count, page=page, full=full)
 
@@ -93,6 +109,10 @@ class AuthenticatedApi(flattr.base.BaseApi):
     def get_things(self, count=None, page=None, full=None):
         """ Get all things of the authenticated user.
         http://developers.flattr.net/api/resources/things/#list-a-authenticated-users-things
+
+        :param count: (Optional) - Count elements in a batch. Default 30.
+        :param page: (Optional) - Get page X of the result set.
+        :param full: (Optional) - Get the all owner fields.
         """
         return flattr._get_query_dict(count=count, page=page, full=full)
 
@@ -110,6 +130,8 @@ class AuthenticatedApi(flattr.base.BaseApi):
     def get_activities(self, type=None):
         """ Get all activities os the authenticated user.
         http://developers.flattr.net/api/resources/activities/#list-a-authenticated-users-activities
+
+        :param type: (Optional) - Can be set to incoming or outgoing, default: outgoing
         """
         return flattr._get_query_dict(type=type)
 
@@ -120,7 +142,11 @@ authenticated = AuthenticatedApi(None)
 class FlattrApi(flattr.base.BaseApi):
 
     def __init__(self, session):
-        """Set the session."""
+        """Set the session.
+        Initializes sub apis.
+
+        :param session: `requests.session.Session` to use.
+        """
         super(FlattrApi, self).__init__(session)
         self.things = things
         self.things._session = session

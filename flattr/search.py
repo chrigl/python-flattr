@@ -6,7 +6,14 @@ class SearchResult(flattr.resource.Resource):
 
     def __init__(self, session=None, total_items=None, items=None, page=None,
                  things=None, **kwargs):
-        """ Initialize with data of an dictionary """
+        """ Initialize with data of an dictionary
+
+        :param session: `requests.session.Session`.
+        :param total_items: Total number of items of the search result.
+        :param items: Currently shown item.
+        :param page: Page n of itmes-batch.
+        :param things: List of found things.
+        """
         # ignored fields: kwargs
         # so lib will not break if flattr-api adds a new field
         super(SearchResult, self).__init__(session)

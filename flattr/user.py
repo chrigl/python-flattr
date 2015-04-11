@@ -13,6 +13,22 @@ class User(flattr.resource.Resource):
                  username=None, url=None, firstname=None, lastname=None,
                  avatar=None, about=None, city=None, country=None, email=None,
                  registered_at=None, **kwargs):
+        """ Initialize a user object.
+
+        :param session: `requests.session.Session`.
+        :param resource: URI in flattrs api.
+        :param link: URI in flattrs web-ui.
+        :param username: ...
+        :param url: ...
+        :param firstname: ...
+        :param lastname: ...
+        :param avatar: Url to the avatar.
+        :param about: ...
+        :param city: ...
+        :param country: ...
+        :param email: ...
+        :param registered_at: ...
+        """
         # ignored fields: kwargs
         # so lib will not break if flattr-api adds a new field
         super(User, self).__init__(session)
@@ -95,9 +111,21 @@ class User(flattr.resource.Resource):
     @flattr.result(flattr.things.Thing)
     @flattr.get('/:username/things')
     def get_things(self, count=None, page=None, full=False):
+        """ Get the things of this user.
+
+        :param page: (Optional) - integer The result page to show
+        :param count: (Optional) - integer Number of items per page
+        :param full: ( Optional ) - Receive full user object instead of small
+        """
         return flattr._get_query_dict(count=count, page=page, full=full)
 
     @flattr.result(flattr.flattrs.Flattr)
     @flattr.get('/:username/flattrs')
     def get_flattrs(self, count=None, page=None, full=False):
+        """ Get the flattrs, the user did so far.
+
+        :param page: (Optional) - integer The result page to show
+        :param count: (Optional) - integer Number of items per page
+        :param full: ( Optional ) - Receive full user object instead of small
+        """
         return flattr._get_query_dict(count=count, page=page, full=full)

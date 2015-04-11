@@ -7,7 +7,14 @@ class Subscription(flattr.resource.Resource):
 
     def __init__(self, session=None, active=True, created_at=None,
                  started_at=None, thing={}, **kwargs):
-        """ Initialize with data of an dictionary """
+        """ Initialize with data of an dictionary
+
+        :param session: `requests.session.Session`.
+        :param active: Is this subscription active or paused.
+        :param created_at: ...
+        :param started_at: started or resumed.
+        :param thing: Related thing.
+        """
         # ignored fields: kwargs
         # so lib will not break if flattr-api adds a new field
         super(Subscription, self).__init__(session)
