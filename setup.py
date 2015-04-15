@@ -20,8 +20,6 @@ class PyTest(TestCommand):
         errno = pytest.main(self.test_args)
         sys.exit(errno)
 
-GIT_HEAD_REV = check_output(shlex.split('git rev-parse --short HEAD')).strip().decode('utf-8')
-
 setup(name='flattr',
       version=version,
       description="Implementation of a python library for the flattr restful api",
@@ -54,7 +52,4 @@ setup(name='flattr',
       entry_points="""
       # -*- Entry points: -*-
       """,
-      options = {'egg_info': {
-          'tag_build': '.dev_%s' % GIT_HEAD_REV,
-          }},
       )
