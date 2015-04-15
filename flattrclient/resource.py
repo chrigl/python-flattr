@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-import flattr.base
+import flattrclient.base
 import sys
 
-class Resource(flattr.base.BaseApi):
+class Resource(flattrclient.base.BaseApi):
     def __repr_helper__(self):
         return 'at %s' % id(self)
 

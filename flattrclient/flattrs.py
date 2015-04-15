@@ -1,6 +1,6 @@
-import flattr.resource
+import flattrclient.resource
 
-class Flattr(flattr.resource.Resource):
+class Flattr(flattrclient.resource.Resource):
     def __init__(self, session=None, thing=None, owner=None, created_at=None,
                  **kwargs):
         """A flattr/support object

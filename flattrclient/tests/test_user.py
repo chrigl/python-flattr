@@ -1,5 +1,5 @@
 import sys
-from flattr.user import User
+from flattrclient.user import User
 from pytest import raises
 
 # all fields of User are ro

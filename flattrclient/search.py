@@ -1,7 +1,7 @@
-import flattr
-import flattr.things
+import flattrclient
+import flattrclient.things
 
-class SearchResult(flattr.resource.Resource):
+class SearchResult(flattrclient.resource.Resource):
     """ flattr search result. Contains things """
 
     def __init__(self, session=None, total_items=None, items=None, page=None,
@@ -21,7 +21,7 @@ class SearchResult(flattr.resource.Resource):
         self._total_items = total_items
         self._items = items
         self._page = page
-        self._things = (flattr.things.Thing(session=self._session, dirty=False, **elm) for elm in things)
+        self._things = (flattrclient.things.Thing(session=self._session, dirty=False, **elm) for elm in things)
 
     # Most of the fields are readonly since you can not modify them on flattr
     @property

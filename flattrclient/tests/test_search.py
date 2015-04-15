@@ -1,6 +1,6 @@
 import types
 import pytest
-from flattr.search import SearchResult
+from flattrclient.search import SearchResult
 
 def test_search():
     res = SearchResult(total_items=100, items=30, page=1,

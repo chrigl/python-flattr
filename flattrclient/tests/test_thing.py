@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
-from flattr.things import Thing
+from flattrclient.things import Thing
 import pytest
 
 # test ro fields
@@ -552,9 +552,9 @@ def test_repr():
 
     res = repr(t)
     isinstance(res, str)
-    assert res == '<flattr.things.Thing at %s>' % id(t)
+    assert res == '<flattrclient.things.Thing at %s>' % id(t)
 
     t.title = u'Hello Wörld'
     res = repr(t)
     isinstance(res, str)
-    assert res == '<flattr.things.Thing Hello Wörld>'
+    assert res == '<flattrclient.things.Thing Hello Wörld>'

@@ -1,9 +1,9 @@
-import flattr
-import flattr.things
-import flattr.resource
-import flattr.flattrs
+import flattrclient
+import flattrclient.things
+import flattrclient.resource
+import flattrclient.flattrs
 
-class User(flattr.resource.Resource):
+class User(flattrclient.resource.Resource):
     """ Flattr users.
     http://developers.flattr.net/api/resources/users/`_ """
 
@@ -108,8 +108,8 @@ class User(flattr.resource.Resource):
         """ Returns registered_at """
         return getattr(self, '_registered_at', None)
 
-    @flattr.result(flattr.things.Thing)
-    @flattr.get('/:username/things')
+    @flattrclient.result(flattrclient.things.Thing)
+    @flattrclient.get('/:username/things')
     def get_things(self, count=None, page=None, full=False):
         """ Get the things of this user.
 
@@ -117,10 +117,10 @@ class User(flattr.resource.Resource):
         :param count: (Optional) - integer Number of items per page
         :param full: ( Optional ) - Receive full user object instead of small
         """
-        return flattr._get_query_dict(count=count, page=page, full=full)
+        return flattrclient._get_query_dict(count=count, page=page, full=full)
 
-    @flattr.result(flattr.flattrs.Flattr)
-    @flattr.get('/:username/flattrs')
+    @flattrclient.result(flattrclient.flattrs.Flattr)
+    @flattrclient.get('/:username/flattrs')
     def get_flattrs(self, count=None, page=None, full=False):
         """ Get the flattrs, the user did so far.
 
@@ -128,4 +128,4 @@ class User(flattr.resource.Resource):
         :param count: (Optional) - integer Number of items per page
         :param full: ( Optional ) - Receive full user object instead of small
         """
-        return flattr._get_query_dict(count=count, page=page, full=full)
+        return flattrclient._get_query_dict(count=count, page=page, full=full)

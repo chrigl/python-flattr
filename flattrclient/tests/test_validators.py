@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from flattr.validators import isInt
-from flattr.validators import isStr
-from flattr.validators import isBinary
-from flattr.validators import isUrl
-from flattr.validators import isStrList
-from flattr.validators import validate
+from flattrclient.validators import isInt
+from flattrclient.validators import isStr
+from flattrclient.validators import isBinary
+from flattrclient.validators import isUrl
+from flattrclient.validators import isStrList
+from flattrclient.validators import validate
 import sys
 from pytest import raises
 

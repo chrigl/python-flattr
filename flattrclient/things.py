@@ -1,13 +1,13 @@
-import flattr
-import flattr.flattrs
-import flattr.resource
-from flattr.validators import validate
-from flattr.validators import isStr
-from flattr.validators import isStrList
-from flattr.validators import isUrl
-from flattr.validators import isBool
+import flattrclient
+import flattrclient.flattrs
+import flattrclient.resource
+from flattrclient.validators import validate
+from flattrclient.validators import isStr
+from flattrclient.validators import isStrList
+from flattrclient.validators import isUrl
+from flattrclient.validators import isBool
 
-class Thing(flattr.resource.Resource):
+class Thing(flattrclient.resource.Resource):
     """ flattr able `thing.
     http://developers.flattr.net/api/resources/things/`_ """
 
@@ -246,8 +246,8 @@ class Thing(flattr.resource.Resource):
         self._dirty = True
 
     # we also need some functionality
-    @flattr.just_json
-    @flattr.post('/:id/flattr')
+    @flattrclient.just_json
+    @flattrclient.post('/:id/flattr')
     def support(self):
         """ Flattr this particular thing.
         Will not work if it's your thing. """
@@ -261,14 +261,14 @@ class Thing(flattr.resource.Resource):
         self._dirty = False
         return res
 
-    @flattr.refresh_thing_id
-    @flattr.post('/')
+    @flattrclient.refresh_thing_id
+    @flattrclient.post('/')
     def _create(self):
         """ Create thing """
         return self._to_flattr_dict()
 
-    @flattr.just_json
-    @flattr.patch('/:id')
+    @flattrclient.just_json
+    @flattrclient.patch('/:id')
     def _update(self):
         """ Returns flattr result or None.
         None if nothing to do since object is not dirty. """
@@ -288,8 +288,8 @@ class Thing(flattr.resource.Resource):
             self._subscribed = True
         return res
 
-    @flattr.just_json
-    @flattr.post('/:id/subscriptions')
+    @flattrclient.just_json
+    @flattrclient.post('/:id/subscriptions')
     def _subscribe(self):
         """ Subscribe to this thing, if currently unsubscribed. """
         if self.subscribed:
@@ -302,8 +302,8 @@ class Thing(flattr.resource.Resource):
         self._subscribed = not self.subscribed
         return res
 
-    @flattr.just_json
-    @flattr.put('/:id/subscriptions')
+    @flattrclient.just_json
+    @flattrclient.put('/:id/subscriptions')
     def _pause_subscription(self):
         """ Pause or resume your subscription of the thing. """
         return {}
@@ -315,8 +315,8 @@ class Thing(flattr.resource.Resource):
             self._subscribed = False
         return res
 
-    @flattr.just_json([204])
-    @flattr.delete('/:id/subscriptions')
+    @flattrclient.just_json([204])
+    @flattrclient.delete('/:id/subscriptions')
     def _unsubscribe(self):
         """ Unsubscribe from thing, if currently subscribed. """
         if not self.subscribed:
@@ -330,8 +330,8 @@ class Thing(flattr.resource.Resource):
         self._id = None
         return res
 
-    @flattr.just_json([204])
-    @flattr.delete('/:id')
+    @flattrclient.just_json([204])
+    @flattrclient.delete('/:id')
     def _delete(self):
         return {}
 
@@ -343,7 +343,7 @@ class Thing(flattr.resource.Resource):
             tags = ','.join(self.tags)
         else:
             tags = None
-        return flattr._get_query_dict(
+        return flattrclient._get_query_dict(
                 url=self.url,
                 hidden=self.hidden,
                 title=self.title,
@@ -352,8 +352,8 @@ class Thing(flattr.resource.Resource):
                 tags=tags
                 )
 
-    @flattr.result(flattr.flattrs.Flattr)
-    @flattr.get('/:id/flattrs')
+    @flattrclient.result(flattrclient.flattrs.Flattr)
+    @flattrclient.get('/:id/flattrs')
     def get_flattrs(self, count=None, page=None, full=False):
         """ Get flattrs of this thing.
 
@@ -361,4 +361,4 @@ class Thing(flattr.resource.Resource):
         :param count: (Optional) - integer Number of items per page
         :param full: ( Optional ) - Receive full user object instead of small
         """
-        return flattr._get_query_dict(count=count, page=page, full=full)
+        return flattrclient._get_query_dict(count=count, page=page, full=full)

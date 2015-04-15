@@ -11,8 +11,8 @@ with open('README.rst') as f:
 class PyTest(TestCommand):
     def finalize_options(self):
         TestCommand.finalize_options(self)
-        self.test_args = ['--cov-report', 'term-missing', '--cov', 'flattr',
-            '--doctest-modules', 'flattr']
+        self.test_args = ['--cov-report', 'term-missing', '--cov', 'flattrclient',
+            '--doctest-modules', 'flattrclient']
         self.test_suite = True
     def run_tests(self):
         #import here, cause outside the eggs aren't loaded
@@ -20,7 +20,7 @@ class PyTest(TestCommand):
         errno = pytest.main(self.test_args)
         sys.exit(errno)
 
-setup(name='flattr',
+setup(name='flattrclient',
       version=version,
       description="Implementation of a python library for the flattr restful api",
       long_description=long_description,

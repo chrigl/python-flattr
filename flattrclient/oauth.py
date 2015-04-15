@@ -1,12 +1,12 @@
-import flattr
-import flattr.base
+import flattrclient
+import flattrclient.base
 import requests
 from requests.auth import HTTPBasicAuth
 
 def get():
     return AuthApi(requests.Session())
 
-class AuthApi(flattr.base.BaseApi):
+class AuthApi(flattrclient.base.BaseApi):
 
     _endpoint = 'oauth'
 
@@ -45,8 +45,8 @@ class AuthApi(flattr.base.BaseApi):
         prep_req = req.prepare()
         return prep_req.url
 
-    @flattr.just_json
-    @flattr.post('/token')
+    @flattrclient.just_json
+    @flattrclient.post('/token')
     def token(self, code, redirect_uri, grant_type='authorization_code'):
         """ Returns the access token, you should use with flattr.api.get.
 

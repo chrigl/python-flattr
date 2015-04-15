@@ -4,7 +4,7 @@ import types
 import functools
 import requests
 from simplejson.decoder import JSONDecodeError
-from flattr.exc import raise_exception
+from flattrclient.exc import raise_exception
 
 def _handle_response(resp, accepted_codes=[200], do_json=True):
     if resp is None:
@@ -149,15 +149,15 @@ def just_json(param):
     """ Decorator to just return json from request.
     You can use it in two ways.
     First, just passing the function:
-       @flattr.just_json
-       @flattr.get('/blah')
+       @flattrclient.just_json
+       @flattrclient.get('/blah')
        def test():
            return {}
     This accepts status_code 200 and returns a json.
 
     You can also pass a list of accepted_status codes and the function:
-       @flattr.just_json([201, 204])
-       @flattr.get('/blah')
+       @flattrclient.just_json([201, 204])
+       @flattrclient.get('/blah')
        def test():
            return {}
     Now, status_codes 201 and 204 are accepted and the json is returned.

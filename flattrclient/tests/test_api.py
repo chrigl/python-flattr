@@ -1,8 +1,8 @@
-from flattr import api
-import flattr.base
-import flattr.things
-import flattr.flattrs
-import flattr.subscriptions
+from flattrclient import api
+import flattrclient.base
+import flattrclient.things
+import flattrclient.flattrs
+import flattrclient.subscriptions
 import pytest
 import requests
 
@@ -19,7 +19,7 @@ def test_BaseApi():
     #    flattr_api = api.BaseApi('')
 
     session = requests.Session()
-    flattr_api = flattr.base.BaseApi(session)
+    flattr_api = flattrclient.base.BaseApi(session)
 
     assert flattr_api._session == session
 
@@ -46,7 +46,7 @@ def test_FlattrApi_new():
     assert flattr_api._session == session
 
     res = flattr_api.new(id=1, title=u'Hello World')
-    assert isinstance(res, flattr.things.Thing)
+    assert isinstance(res, flattrclient.things.Thing)
     assert res._session == session
     assert res.id == 1
     assert res.title == 'Hello World'
@@ -119,7 +119,7 @@ def test_authentivated_api_things(fake_session_cls, fake_thing_cls):
     flattr_api = api.AuthenticatedApi(session=fake_session_cls(fake_thing_cls))
 
     res = flattr_api.get_things()
-    assert isinstance(res, flattr.things.Thing)
+    assert isinstance(res, flattrclient.things.Thing)
 
     assert res.url == u'https://api.flattr.com/rest/v2/user/things'
     assert res.link == {}
@@ -134,7 +134,7 @@ def test_authentivated_api_subscriptions(fake_session_cls, fake_subscription_cls
     flattr_api = api.AuthenticatedApi(session=fake_session_cls(fake_subscription_cls))
 
     res = flattr_api.get_subscriptions()
-    assert isinstance(res, flattr.subscriptions.Subscription)
+    assert isinstance(res, flattrclient.subscriptions.Subscription)
 
     assert res.created_at == 'https://api.flattr.com/rest/v2/user/subscriptions'
     assert res.started_at == {}
@@ -146,7 +146,7 @@ def test_authentivated_api_flattrs(fake_session_cls, fake_flattr_cls):
     flattr_api = api.AuthenticatedApi(session=fake_session_cls(fake_flattr_cls))
 
     res = flattr_api.get_flattrs()
-    assert isinstance(res, flattr.flattrs.Flattr)
+    assert isinstance(res, flattrclient.flattrs.Flattr)
 
     assert res.created_at == 'https://api.flattr.com/rest/v2/user/flattrs'
     assert res.owner == {}

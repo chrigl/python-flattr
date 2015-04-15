@@ -1,7 +1,7 @@
-import flattr.things
-import flattr.resource
+import flattrclient.things
+import flattrclient.resource
 
-class Subscription(flattr.resource.Resource):
+class Subscription(flattrclient.resource.Resource):
     """ One of your `subscription
     http://developers.flattr.net/api/resources/subscriptions/`_ """
 
@@ -24,7 +24,7 @@ class Subscription(flattr.resource.Resource):
         self._created_at = created_at
         self._started_at = started_at
         if thing:
-            self._thing = flattr.things.Thing(session=session, **thing)
+            self._thing = flattrclient.things.Thing(session=session, **thing)
 
     def __repr_helper__(self):
         thing = getattr(self, '_thing', {})

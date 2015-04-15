@@ -1,5 +1,5 @@
 import sys
-from flattr.flattrs import Flattr
+from flattrclient.flattrs import Flattr
 from pytest import raises
 
 

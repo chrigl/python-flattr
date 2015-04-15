@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 import six
 import requests
-import flattr
-import flattr.user
-import flattr.things
-import flattr.flattrs
-import flattr.subscriptions
-import flattr.base
-import flattr.search
+import flattrclient
+import flattrclient.user
+import flattrclient.things
+import flattrclient.flattrs
+import flattrclient.subscriptions
+import flattrclient.base
+import flattrclient.search
 
 def get(auth_token):
-    """ Returns an `flattr.api.FlattrApi` object, initialized with a
+    """ Returns an `flattrclient.api.FlattrApi` object, initialized with a
     session object of `requests.session.Session`.
     """
     session = requests.Session()
@@ -18,17 +18,17 @@ def get(auth_token):
         'Authorization': 'Bearer %s' % auth_token})
     return FlattrApi(session)
 
-class ThingApi(flattr.base.BaseApi):
+class ThingApi(flattrclient.base.BaseApi):
 
     _endpoint = 'rest/v2/things'
 
     def new(self, *args, **kwargs):
-        """Returns new `flattr.things.Thing`, connected to the session.
-        For parameters have a look at `flattr.things.Thing`."""
-        return flattr.things.Thing(session=self._session, **kwargs)
+        """Returns new `flattrclient.things.Thing`, connected to the session.
+        For parameters have a look at `flattrclient.things.Thing`."""
+        return flattrclient.things.Thing(session=self._session, **kwargs)
 
-    @flattr.result(flattr.things.Thing)
-    @flattr.get('/')
+    @flattrclient.result(flattrclient.things.Thing)
+    @flattrclient.get('/')
     def get(self, *args):
         """Get one or more thing.
         Pass as much thing ids as parameter as you need to.
@@ -37,8 +37,8 @@ class ThingApi(flattr.base.BaseApi):
         :param *args: Really. It will be ','.join(args)'ed."""
         return ','.join(args)
 
-    @flattr.result(flattr.things.Thing)
-    @flattr.get('/lookup')
+    @flattrclient.result(flattrclient.things.Thing)
+    @flattrclient.get('/lookup')
     def lookup(self, url):
         """Check if a thing exists.
         Returns one thing.
@@ -47,8 +47,8 @@ class ThingApi(flattr.base.BaseApi):
         """
         return {'url': url}
 
-    @flattr.result(flattr.search.SearchResult)
-    @flattr.get('/search')
+    @flattrclient.result(flattrclient.search.SearchResult)
+    @flattrclient.get('/search')
     def search(self, query=None, url=None, tags=None, language=None,
         category=None, user=None, sort=None, page=None, count=None, full=False):
         """Search a thing
@@ -64,12 +64,12 @@ class ThingApi(flattr.base.BaseApi):
         :param count: (Optional) - integer Number of items per page
         :param full: ( Optional ) - Receive full user object instead of small
         """
-        q = flattr._get_query_dict(query=query, url=url, tags=tags,
+        q = flattrclient._get_query_dict(query=query, url=url, tags=tags,
                 language=language, category=category, user=user, sort=sort,
                 page=page, count=count, full=full)
         return q
 
-class UsersApi(flattr.base.BaseApi):
+class UsersApi(flattrclient.base.BaseApi):
 
     _endpoint = 'rest/v2/users'
 
@@ -77,23 +77,23 @@ class UsersApi(flattr.base.BaseApi):
         """Returns user object, only containing username.
         No api-call happens here.
 
-        :param username: Make a `flattr.user.User` with this username."""
-        return flattr.user.User(session=self._session, username=username)
+        :param username: Make a `flattrclient.user.User` with this username."""
+        return flattrclient.user.User(session=self._session, username=username)
 
-    @flattr.result(flattr.user.User)
-    @flattr.get('/')
+    @flattrclient.result(flattrclient.user.User)
+    @flattrclient.get('/')
     def get(self, username):
         """Get the flattr user.
 
         :param username: Get the user from flattr."""
         return username
 
-class AuthenticatedApi(flattr.base.BaseApi):
+class AuthenticatedApi(flattrclient.base.BaseApi):
 
     _endpoint = 'rest/v2/user'
 
-    @flattr.result(flattr.flattrs.Flattr)
-    @flattr.get('/flattrs')
+    @flattrclient.result(flattrclient.flattrs.Flattr)
+    @flattrclient.get('/flattrs')
     def get_flattrs(self, count=None, page=None, full=None):
         """ Get all flattrs all flattrs, the authenticated user did so far.
         http://developers.flattr.net/api/resources/flattrs/#list-the-authenticated-users-flattrs
@@ -102,10 +102,10 @@ class AuthenticatedApi(flattr.base.BaseApi):
         :param page: (Optional) - Get page X of the result set.
         :param full: (Optional) - Get the all owner fields.
         """
-        return flattr._get_query_dict(count=count, page=page, full=full)
+        return flattrclient._get_query_dict(count=count, page=page, full=full)
 
-    @flattr.result(flattr.things.Thing)
-    @flattr.get('/things')
+    @flattrclient.result(flattrclient.things.Thing)
+    @flattrclient.get('/things')
     def get_things(self, count=None, page=None, full=None):
         """ Get all things of the authenticated user.
         http://developers.flattr.net/api/resources/things/#list-a-authenticated-users-things
@@ -114,18 +114,18 @@ class AuthenticatedApi(flattr.base.BaseApi):
         :param page: (Optional) - Get page X of the result set.
         :param full: (Optional) - Get the all owner fields.
         """
-        return flattr._get_query_dict(count=count, page=page, full=full)
+        return flattrclient._get_query_dict(count=count, page=page, full=full)
 
-    @flattr.result(flattr.subscriptions.Subscription)
-    @flattr.get('/subscriptions')
+    @flattrclient.result(flattrclient.subscriptions.Subscription)
+    @flattrclient.get('/subscriptions')
     def get_subscriptions(self):
         """ Get all subscriptions of the authenticated user.
         http://developers.flattr.net/api/resources/subscriptions/#list-subscriptions
         """
         return {}
 
-    @flattr.just_json
-    @flattr.get('/activities',
+    @flattrclient.just_json
+    @flattrclient.get('/activities',
             additional_headers={'Accept': 'application/stream+json'})
     def get_activities(self, type=None):
         """ Get all activities os the authenticated user.
@@ -133,13 +133,13 @@ class AuthenticatedApi(flattr.base.BaseApi):
 
         :param type: (Optional) - Can be set to incoming or outgoing, default: outgoing
         """
-        return flattr._get_query_dict(type=type)
+        return flattrclient._get_query_dict(type=type)
 
 things = ThingApi(None)
 users = UsersApi(None)
 authenticated = AuthenticatedApi(None)
 
-class FlattrApi(flattr.base.BaseApi):
+class FlattrApi(flattrclient.base.BaseApi):
 
     def __init__(self, session):
         """Set the session.

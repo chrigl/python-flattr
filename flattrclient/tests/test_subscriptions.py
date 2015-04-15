@@ -1,5 +1,5 @@
-from flattr.things import Thing
-from flattr.subscriptions import Subscription
+from flattrclient.things import Thing
+from flattrclient.subscriptions import Subscription
 
 def test_subscription():
     subscription = Subscription(session='Hello World', created_at='now',
@@ -14,12 +14,12 @@ def test_subscription():
     assert subscription._thing._session is subscription._session
 
     res = repr(subscription)
-    assert res == '<flattr.subscriptions.Subscription testing>'
+    assert res == '<flattrclient.subscriptions.Subscription testing>'
 
     subscription._thing = {'hello': 'world'}
     res = repr(subscription)
-    assert res == '<flattr.subscriptions.Subscription at %s>' % id(subscription)
+    assert res == '<flattrclient.subscriptions.Subscription at %s>' % id(subscription)
 
     delattr(subscription, '_thing')
     res = repr(subscription)
-    assert res == '<flattr.subscriptions.Subscription at %s>' % id(subscription)
+    assert res == '<flattrclient.subscriptions.Subscription at %s>' % id(subscription)

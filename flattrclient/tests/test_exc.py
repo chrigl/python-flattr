@@ -1,5 +1,5 @@
 from pytest import raises
-from flattr.exc import (raise_exception,
+from flattrclient.exc import (raise_exception,
     FlattrApiError,
     InvalidRequestError,
     InvalidParametersError,

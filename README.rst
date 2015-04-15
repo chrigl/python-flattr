@@ -32,7 +32,7 @@ Usage
 -----
 
 DISCLAIMER: The following code examples are python3. If you are using python2,
-you have to pass unicodes especially to attributes of ``flattr.things.Thing``.
+you have to pass unicodes especially to attributes of ``flattrclient.things.Thing``.
 
 
 First of all. You need to get an auth token. The implementation is up to you,
@@ -48,8 +48,8 @@ With this credentials you can set up an api-connection
 
 .. code-block:: python
    
-   >>> import flattr.oauth
-   >>> auth_api = flattr.oauth.get()
+   >>> import flattrclient.oauth
+   >>> auth_api = flattrclient.oauth.get()
 
 You can call ``authorize`` to get the URL, you have to point your user to.
 
@@ -84,23 +84,23 @@ it a try and get all things of the user ``flattr``
 
 .. code-block:: python
    
-   >>> import flattr.api
-   >>> api = flattr.api.get(AUTH_TOKEN)
+   >>> import flattrclient.api
+   >>> api = flattrclient.api.get(AUTH_TOKEN)
    >>> f = api.users('flattr')
    >>> f
-   <flattr.user.User flattr>
+   <flattrclient.user.User flattr>
    >>> things = list(f.get_things())
-   [<flattr.things.Thing Bielefeld gibts wirklich! Zumindest im Fußball>,
-    <flattr.things.Thing Tweet by @Flattr, 25 Feb>,
+   [<flattrclient.things.Thing Bielefeld gibts wirklich! Zumindest im Fußball>,
+    <flattrclient.things.Thing Tweet by @Flattr, 25 Feb>,
     ...]
 
 That was fun. But what happened?
 
-First, we introduced the session between flattr_ and us, using ``flattr.api.get``.
+First, we introduced the session between flattr_ and us, using ``flattrclient.api.get``.
 This is very likely always the first thing, you do. Currently I use
 ``requests.sessions.Session`` in the background, without any pooling.
 
-Then we create a lightweight ``flattr.user.User``-object. This does not perform
+Then we create a lightweight ``flattrclient.user.User``-object. This does not perform
 any api-call. So if there is a typo, the next call (``get_things``), will cause
 the error. If you want, to perform an api-call for the user, use
 ``api.users.get('flattr')``.
@@ -137,11 +137,11 @@ However. You may want to create a new thing on flattr_.
    
    >>> mything = api.things.new(url='http://example.com', title='crazy title')
    >>> mything
-   <flattr.things.Thing craty title>
+   <flattrclient.things.Thing craty title>
    >>> mything.description = 'Some more context'
    >>> mything.commit()
 
-You should use ``api.things.new`` to get a new object of ``flattr.things.Thing``
+You should use ``api.things.new`` to get a new object of ``flattrclient.things.Thing``
 because it again takes care of setting the session.
 
 
@@ -161,7 +161,7 @@ stuff. Each thing you got by user, or fetch via ``api.things`` is supportable.
    
    >>> thing = api.things.get('4085245')
    >>> thing
-   <flattr.things.Thing chrigl/python-flattr on GitHub>
+   <flattrclient.things.Thing chrigl/python-flattr on GitHub>
    >>> thing.support()
    {...}
 
@@ -171,7 +171,7 @@ Just supporting is not enough? Subscribe to the thing
    
    >>> thing = api.things.get('4085245')
    >>> thing
-   <flattr.things.Thing chrigl/python-flattr on GitHub>
+   <flattrclient.things.Thing chrigl/python-flattr on GitHub>
    >>> thing.subscribe()
    {...}
 
