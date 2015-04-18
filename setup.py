@@ -4,7 +4,7 @@ import sys, os
 import shlex
 from subprocess import check_output
 
-version = '0.1'
+version = '0.2'
 with open('README.rst') as f:
     long_description = f.read()
 

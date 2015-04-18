@@ -135,10 +135,6 @@ class AuthenticatedApi(flattrclient.base.BaseApi):
         """
         return flattrclient._get_query_dict(type=type)
 
-things = ThingApi(None)
-users = UsersApi(None)
-authenticated = AuthenticatedApi(None)
-
 class FlattrApi(flattrclient.base.BaseApi):
 
     def __init__(self, session):
@@ -148,9 +144,6 @@ class FlattrApi(flattrclient.base.BaseApi):
         :param session: `requests.session.Session` to use.
         """
         super(FlattrApi, self).__init__(session)
-        self.things = things
-        self.things._session = session
-        self.users = users
-        self.users._session = session
-        self.authenticated = authenticated
-        self.authenticated._session = session
+        self.things = ThingApi(session)
+        self.users = UsersApi(session)
+        self.authenticated = AuthenticatedApi(session)
